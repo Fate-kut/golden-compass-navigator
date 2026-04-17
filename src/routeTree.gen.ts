@@ -14,9 +14,13 @@ import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as PoolsRouteImport } from './routes/pools'
 import { Route as NavigatorRouteImport } from './routes/navigator'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as KycRouteImport } from './routes/kyc'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as HistoryRouteImport } from './routes/history'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminTransactionsRouteImport } from './routes/admin.transactions'
+import { Route as AdminKycRouteImport } from './routes/admin.kyc'
 
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
@@ -43,6 +47,11 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const KycRoute = KycRouteImport.update({
+  id: '/kyc',
+  path: '/kyc',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const HomeRoute = HomeRouteImport.update({
   id: '/home',
   path: '/home',
@@ -53,80 +62,121 @@ const HistoryRoute = HistoryRouteImport.update({
   path: '/history',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminTransactionsRoute = AdminTransactionsRouteImport.update({
+  id: '/transactions',
+  path: '/transactions',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminKycRoute = AdminKycRouteImport.update({
+  id: '/kyc',
+  path: '/kyc',
+  getParentRoute: () => AdminRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
   '/history': typeof HistoryRoute
   '/home': typeof HomeRoute
+  '/kyc': typeof KycRoute
   '/login': typeof LoginRoute
   '/navigator': typeof NavigatorRoute
   '/pools': typeof PoolsRoute
   '/profile': typeof ProfileRoute
   '/signup': typeof SignupRoute
+  '/admin/kyc': typeof AdminKycRoute
+  '/admin/transactions': typeof AdminTransactionsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
   '/history': typeof HistoryRoute
   '/home': typeof HomeRoute
+  '/kyc': typeof KycRoute
   '/login': typeof LoginRoute
   '/navigator': typeof NavigatorRoute
   '/pools': typeof PoolsRoute
   '/profile': typeof ProfileRoute
   '/signup': typeof SignupRoute
+  '/admin/kyc': typeof AdminKycRoute
+  '/admin/transactions': typeof AdminTransactionsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
   '/history': typeof HistoryRoute
   '/home': typeof HomeRoute
+  '/kyc': typeof KycRoute
   '/login': typeof LoginRoute
   '/navigator': typeof NavigatorRoute
   '/pools': typeof PoolsRoute
   '/profile': typeof ProfileRoute
   '/signup': typeof SignupRoute
+  '/admin/kyc': typeof AdminKycRoute
+  '/admin/transactions': typeof AdminTransactionsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/admin'
     | '/history'
     | '/home'
+    | '/kyc'
     | '/login'
     | '/navigator'
     | '/pools'
     | '/profile'
     | '/signup'
+    | '/admin/kyc'
+    | '/admin/transactions'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/admin'
     | '/history'
     | '/home'
+    | '/kyc'
     | '/login'
     | '/navigator'
     | '/pools'
     | '/profile'
     | '/signup'
+    | '/admin/kyc'
+    | '/admin/transactions'
   id:
     | '__root__'
     | '/'
+    | '/admin'
     | '/history'
     | '/home'
+    | '/kyc'
     | '/login'
     | '/navigator'
     | '/pools'
     | '/profile'
     | '/signup'
+    | '/admin/kyc'
+    | '/admin/transactions'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRouteWithChildren
   HistoryRoute: typeof HistoryRoute
   HomeRoute: typeof HomeRoute
+  KycRoute: typeof KycRoute
   LoginRoute: typeof LoginRoute
   NavigatorRoute: typeof NavigatorRoute
   PoolsRoute: typeof PoolsRoute
@@ -171,6 +221,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/kyc': {
+      id: '/kyc'
+      path: '/kyc'
+      fullPath: '/kyc'
+      preLoaderRoute: typeof KycRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/home': {
       id: '/home'
       path: '/home'
@@ -185,6 +242,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HistoryRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -192,13 +256,41 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/transactions': {
+      id: '/admin/transactions'
+      path: '/transactions'
+      fullPath: '/admin/transactions'
+      preLoaderRoute: typeof AdminTransactionsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/kyc': {
+      id: '/admin/kyc'
+      path: '/kyc'
+      fullPath: '/admin/kyc'
+      preLoaderRoute: typeof AdminKycRouteImport
+      parentRoute: typeof AdminRoute
+    }
   }
 }
 
+interface AdminRouteChildren {
+  AdminKycRoute: typeof AdminKycRoute
+  AdminTransactionsRoute: typeof AdminTransactionsRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminKycRoute: AdminKycRoute,
+  AdminTransactionsRoute: AdminTransactionsRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRouteWithChildren,
   HistoryRoute: HistoryRoute,
   HomeRoute: HomeRoute,
+  KycRoute: KycRoute,
   LoginRoute: LoginRoute,
   NavigatorRoute: NavigatorRoute,
   PoolsRoute: PoolsRoute,
@@ -208,12 +300,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}
