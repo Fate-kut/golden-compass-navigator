@@ -1,7 +1,9 @@
 import { Outlet, Link, createRootRoute, HeadContent, Scripts, useLocation } from "@tanstack/react-router";
 import { AuthProvider } from "@/hooks/useAuth";
+import { NotificationsProvider } from "@/hooks/useNotifications";
 import { BottomNav } from "@/components/BottomNav";
 import { ParallaxBackground } from "@/components/ParallaxBackground";
+import { Toaster } from "@/components/ui/sonner";
 
 import appCss from "../styles.css?url";
 
@@ -98,7 +100,10 @@ function AppShell() {
 function RootComponent() {
   return (
     <AuthProvider>
-      <AppShell />
+      <NotificationsProvider>
+        <AppShell />
+        <Toaster position="top-center" theme="dark" richColors />
+      </NotificationsProvider>
     </AuthProvider>
   );
 }
