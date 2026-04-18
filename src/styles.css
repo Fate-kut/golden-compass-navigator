@@ -400,3 +400,24 @@
 .t-success { color: var(--gc-success); }
 .t-danger { color: var(--gc-danger); }
 .t-teal { color: var(--teal); }
+
+/* ── Navigator markdown ── */
+.prose-navigator p { margin: 0 0 8px; }
+.prose-navigator p:last-child { margin-bottom: 0; }
+.prose-navigator strong { color: var(--gold-300); font-weight: 600; }
+.prose-navigator ul, .prose-navigator ol { margin: 4px 0 8px; padding-left: 18px; }
+.prose-navigator li { margin: 2px 0; }
+.prose-navigator code {
+  background: rgba(255,255,255,0.06);
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--gold-200);
+}
+.prose-navigator h1, .prose-navigator h2, .prose-navigator h3 {
+  font-family: var(--font-display);
+  color: var(--gold-300);
+  font-size: 14px;
+  margin: 8px 0 4px;
+}
