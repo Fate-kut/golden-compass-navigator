@@ -5,6 +5,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { AnimatedNumber } from "@/components/AnimatedNumber";
 import { Sparkline } from "@/components/Sparkline";
 import { TiltCard } from "@/components/TiltCard";
+import { NotificationBell } from "@/components/NotificationBell";
 
 export const Route = createFileRoute("/home")({
   head: () => ({
@@ -90,13 +91,16 @@ function HomePage() {
             {fullName}
           </h1>
         </div>
-        <Link
-          to="/profile"
-          className="glass w-11 h-11 rounded-full flex items-center justify-center t-gold"
-          style={{ fontFamily: "var(--font-display)", fontSize: 14 }}
-        >
-          {fullName.charAt(0).toUpperCase()}
-        </Link>
+        <div className="flex items-center gap-2">
+          <NotificationBell />
+          <Link
+            to="/profile"
+            className="glass w-11 h-11 rounded-full flex items-center justify-center t-gold"
+            style={{ fontFamily: "var(--font-display)", fontSize: 14 }}
+          >
+            {fullName.charAt(0).toUpperCase()}
+          </Link>
+        </div>
       </header>
 
       {/* Portfolio hero */}
