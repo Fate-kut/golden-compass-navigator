@@ -19,6 +19,10 @@ import { Route as HomeRouteImport } from './routes/home'
 import { Route as HistoryRouteImport } from './routes/history'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiWithdrawRequestRouteImport } from './routes/api/withdraw-request'
+import { Route as ApiWithdrawApproveRouteImport } from './routes/api/withdraw-approve'
+import { Route as ApiMpesaStkRouteImport } from './routes/api/mpesa-stk'
+import { Route as ApiMpesaCallbackRouteImport } from './routes/api/mpesa-callback'
 import { Route as AdminTransactionsRouteImport } from './routes/admin.transactions'
 import { Route as AdminKycRouteImport } from './routes/admin.kyc'
 
@@ -72,6 +76,26 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiWithdrawRequestRoute = ApiWithdrawRequestRouteImport.update({
+  id: '/api/withdraw-request',
+  path: '/api/withdraw-request',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiWithdrawApproveRoute = ApiWithdrawApproveRouteImport.update({
+  id: '/api/withdraw-approve',
+  path: '/api/withdraw-approve',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiMpesaStkRoute = ApiMpesaStkRouteImport.update({
+  id: '/api/mpesa-stk',
+  path: '/api/mpesa-stk',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiMpesaCallbackRoute = ApiMpesaCallbackRouteImport.update({
+  id: '/api/mpesa-callback',
+  path: '/api/mpesa-callback',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminTransactionsRoute = AdminTransactionsRouteImport.update({
   id: '/transactions',
   path: '/transactions',
@@ -96,6 +120,10 @@ export interface FileRoutesByFullPath {
   '/signup': typeof SignupRoute
   '/admin/kyc': typeof AdminKycRoute
   '/admin/transactions': typeof AdminTransactionsRoute
+  '/api/mpesa-callback': typeof ApiMpesaCallbackRoute
+  '/api/mpesa-stk': typeof ApiMpesaStkRoute
+  '/api/withdraw-approve': typeof ApiWithdrawApproveRoute
+  '/api/withdraw-request': typeof ApiWithdrawRequestRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -110,6 +138,10 @@ export interface FileRoutesByTo {
   '/signup': typeof SignupRoute
   '/admin/kyc': typeof AdminKycRoute
   '/admin/transactions': typeof AdminTransactionsRoute
+  '/api/mpesa-callback': typeof ApiMpesaCallbackRoute
+  '/api/mpesa-stk': typeof ApiMpesaStkRoute
+  '/api/withdraw-approve': typeof ApiWithdrawApproveRoute
+  '/api/withdraw-request': typeof ApiWithdrawRequestRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -125,6 +157,10 @@ export interface FileRoutesById {
   '/signup': typeof SignupRoute
   '/admin/kyc': typeof AdminKycRoute
   '/admin/transactions': typeof AdminTransactionsRoute
+  '/api/mpesa-callback': typeof ApiMpesaCallbackRoute
+  '/api/mpesa-stk': typeof ApiMpesaStkRoute
+  '/api/withdraw-approve': typeof ApiWithdrawApproveRoute
+  '/api/withdraw-request': typeof ApiWithdrawRequestRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -141,6 +177,10 @@ export interface FileRouteTypes {
     | '/signup'
     | '/admin/kyc'
     | '/admin/transactions'
+    | '/api/mpesa-callback'
+    | '/api/mpesa-stk'
+    | '/api/withdraw-approve'
+    | '/api/withdraw-request'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -155,6 +195,10 @@ export interface FileRouteTypes {
     | '/signup'
     | '/admin/kyc'
     | '/admin/transactions'
+    | '/api/mpesa-callback'
+    | '/api/mpesa-stk'
+    | '/api/withdraw-approve'
+    | '/api/withdraw-request'
   id:
     | '__root__'
     | '/'
@@ -169,6 +213,10 @@ export interface FileRouteTypes {
     | '/signup'
     | '/admin/kyc'
     | '/admin/transactions'
+    | '/api/mpesa-callback'
+    | '/api/mpesa-stk'
+    | '/api/withdraw-approve'
+    | '/api/withdraw-request'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -182,6 +230,10 @@ export interface RootRouteChildren {
   PoolsRoute: typeof PoolsRoute
   ProfileRoute: typeof ProfileRoute
   SignupRoute: typeof SignupRoute
+  ApiMpesaCallbackRoute: typeof ApiMpesaCallbackRoute
+  ApiMpesaStkRoute: typeof ApiMpesaStkRoute
+  ApiWithdrawApproveRoute: typeof ApiWithdrawApproveRoute
+  ApiWithdrawRequestRoute: typeof ApiWithdrawRequestRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -256,6 +308,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/withdraw-request': {
+      id: '/api/withdraw-request'
+      path: '/api/withdraw-request'
+      fullPath: '/api/withdraw-request'
+      preLoaderRoute: typeof ApiWithdrawRequestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/withdraw-approve': {
+      id: '/api/withdraw-approve'
+      path: '/api/withdraw-approve'
+      fullPath: '/api/withdraw-approve'
+      preLoaderRoute: typeof ApiWithdrawApproveRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/mpesa-stk': {
+      id: '/api/mpesa-stk'
+      path: '/api/mpesa-stk'
+      fullPath: '/api/mpesa-stk'
+      preLoaderRoute: typeof ApiMpesaStkRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/mpesa-callback': {
+      id: '/api/mpesa-callback'
+      path: '/api/mpesa-callback'
+      fullPath: '/api/mpesa-callback'
+      preLoaderRoute: typeof ApiMpesaCallbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/transactions': {
       id: '/admin/transactions'
       path: '/transactions'
@@ -296,6 +376,10 @@ const rootRouteChildren: RootRouteChildren = {
   PoolsRoute: PoolsRoute,
   ProfileRoute: ProfileRoute,
   SignupRoute: SignupRoute,
+  ApiMpesaCallbackRoute: ApiMpesaCallbackRoute,
+  ApiMpesaStkRoute: ApiMpesaStkRoute,
+  ApiWithdrawApproveRoute: ApiWithdrawApproveRoute,
+  ApiWithdrawRequestRoute: ApiWithdrawRequestRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
