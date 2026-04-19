@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { TiltCard } from "@/components/TiltCard";
+import { DepositModal } from "@/components/DepositModal";
 
 export const Route = createFileRoute("/pools")({
   head: () => ({
@@ -52,6 +53,7 @@ function PoolsPage() {
   const navigate = useNavigate();
   const [pools, setPools] = useState<Pool[]>([]);
   const [loading, setLoading] = useState(true);
+  const [depositPool, setDepositPool] = useState<Pool | null>(null);
 
   useEffect(() => {
     if (!authLoading && !user) navigate({ to: "/login" });
@@ -149,7 +151,7 @@ function PoolsPage() {
                   </div>
 
                   <button
-                    onClick={() => navigate({ to: "/home" })}
+                    onClick={() => setDepositPool(pool)}
                     className="btn-brass w-full mt-4"
                     style={{ padding: "12px 16px", fontSize: 11 }}
                   >
@@ -160,6 +162,16 @@ function PoolsPage() {
             );
           })}
         </div>
+      )}
+      {depositPool && (
+        <DepositModal
+          pool={{
+            id: depositPool.id,
+            name: depositPool.name,
+            min_investment: depositPool.min_investment,
+          }}
+          onClose={() => setDepositPool(null)}
+        />
       )}
     </div>
   );

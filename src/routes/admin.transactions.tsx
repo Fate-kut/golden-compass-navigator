@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserRole } from "@/hooks/useUserRole";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin/transactions")({
   head: () => ({ meta: [{ title: "Transactions — Admin" }] }),
@@ -29,6 +30,8 @@ function AdminTxPage() {
   const [rows, setRows] = useState<TxRow[]>([]);
   const [profiles, setProfiles] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
+  const [busyId, setBusyId] = useState<string | null>(null);
+  const [reloadTick, setReloadTick] = useState(0);
 
   useEffect(() => {
     if (!authLoading && !user) navigate({ to: "/login" });
@@ -58,7 +61,32 @@ function AdminTxPage() {
       }
       setLoading(false);
     })();
-  }, [isAdmin]);
+  }, [isAdmin, reloadTick]);
+
+  const handleAction = async (txId: string, action: "approve" | "reject") => {
+    setBusyId(txId);
+    try {
+      const { data: sess } = await supabase.auth.getSession();
+      const token = sess.session?.access_token;
+      if (!token) {
+        toast.error("Session expired");
+        return;
+      }
+      const res = await fetch("/api/withdraw-approve", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ transaction_id: txId, action }),
+      });
+      const data = await res.json();
+      if (!res.ok || data.error) toast.error(data.error || "Failed");
+      else {
+        toast.success(action === "approve" ? "Withdrawal approved" : "Withdrawal rejected");
+        setReloadTick((t) => t + 1);
+      }
+    } finally {
+      setBusyId(null);
+    }
+  };
 
   return (
     <div className="flex flex-col gap-4 px-5 pt-6 pb-28 anim-fade-up">
@@ -84,23 +112,46 @@ function AdminTxPage() {
             const isDep = tx.type === "deposit";
             const color = tx.status === "confirmed" ? "var(--gc-success)" :
               tx.status === "failed" ? "var(--gc-danger)" : "var(--gc-warning)";
+            const showActions = tx.type === "withdrawal" && tx.status === "pending";
             return (
-              <div key={tx.id} className="glass rounded-xl p-3 flex items-center justify-between">
-                <div className="min-w-0 flex-1">
-                  <p className="t-serif t-parch truncate" style={{ fontSize: 13 }}>
-                    {isDep ? "↓" : "↑"} {profiles[tx.user_id] || "—"}
-                  </p>
-                  <p className="t-mono t-muted mt-0.5" style={{ fontSize: 9 }}>
-                    {tx.created_at ? new Date(tx.created_at).toLocaleString("en-KE") : ""}
-                    {tx.investment_pools?.name ? ` · ${tx.investment_pools.name}` : ""}
-                  </p>
+              <div key={tx.id} className="glass rounded-xl p-3">
+                <div className="flex items-center justify-between">
+                  <div className="min-w-0 flex-1">
+                    <p className="t-serif t-parch truncate" style={{ fontSize: 13 }}>
+                      {isDep ? "↓" : "↑"} {profiles[tx.user_id] || "—"}
+                    </p>
+                    <p className="t-mono t-muted mt-0.5" style={{ fontSize: 9 }}>
+                      {tx.created_at ? new Date(tx.created_at).toLocaleString("en-KE") : ""}
+                      {tx.investment_pools?.name ? ` · ${tx.investment_pools.name}` : ""}
+                    </p>
+                  </div>
+                  <div className="text-right ml-2">
+                    <p className="t-serif t-gold" style={{ fontSize: 13 }}>{KES(Number(tx.amount))}</p>
+                    <span className="t-mono" style={{ fontSize: 8, letterSpacing: "0.12em", color }}>
+                      {(tx.status ?? "").toUpperCase()}
+                    </span>
+                  </div>
                 </div>
-                <div className="text-right ml-2">
-                  <p className="t-serif t-gold" style={{ fontSize: 13 }}>{KES(Number(tx.amount))}</p>
-                  <span className="t-mono" style={{ fontSize: 8, letterSpacing: "0.12em", color }}>
-                    {(tx.status ?? "").toUpperCase()}
-                  </span>
-                </div>
+                {showActions && (
+                  <div className="grid grid-cols-2 gap-2 mt-3">
+                    <button
+                      onClick={() => handleAction(tx.id, "approve")}
+                      disabled={busyId === tx.id}
+                      className="btn-brass"
+                      style={{ padding: "8px 10px", fontSize: 10, opacity: busyId === tx.id ? 0.5 : 1 }}
+                    >
+                      APPROVE
+                    </button>
+                    <button
+                      onClick={() => handleAction(tx.id, "reject")}
+                      disabled={busyId === tx.id}
+                      className="glass rounded-lg t-danger"
+                      style={{ fontFamily: "var(--font-display)", letterSpacing: "0.08em", fontSize: 10, padding: "8px 10px" }}
+                    >
+                      REJECT
+                    </button>
+                  </div>
+                )}
               </div>
             );
           })}

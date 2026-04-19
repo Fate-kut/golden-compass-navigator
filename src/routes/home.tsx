@@ -6,6 +6,7 @@ import { AnimatedNumber } from "@/components/AnimatedNumber";
 import { Sparkline } from "@/components/Sparkline";
 import { TiltCard } from "@/components/TiltCard";
 import { NotificationBell } from "@/components/NotificationBell";
+import { WithdrawModal } from "@/components/WithdrawModal";
 
 export const Route = createFileRoute("/home")({
   head: () => ({
@@ -23,7 +24,13 @@ interface InvestmentRow {
   invested_amount: number | null;
   current_value: number | null;
   units_owned: number | null;
-  investment_pools: { name: string; pool_type: string | null; current_nav: number | null } | null;
+  investment_pools: {
+    name: string;
+    pool_type: string | null;
+    current_nav: number | null;
+    exit_fee_percent: number | null;
+    holding_period_days: number | null;
+  } | null;
 }
 
 const KES = (n: number) =>
@@ -35,6 +42,8 @@ function HomePage() {
   const [loading, setLoading] = useState(true);
   const [investments, setInvestments] = useState<InvestmentRow[]>([]);
   const [fullName, setFullName] = useState("Investor");
+  const [withdrawTarget, setWithdrawTarget] = useState<InvestmentRow | null>(null);
+  const [reloadTick, setReloadTick] = useState(0);
 
   useEffect(() => {
     if (!authLoading && !user) navigate({ to: "/login" });
@@ -47,7 +56,7 @@ function HomePage() {
       const [{ data: invs }, { data: profile }] = await Promise.all([
         supabase
           .from("user_investments")
-          .select("id, pool_id, invested_amount, current_value, units_owned, investment_pools(name, pool_type, current_nav)")
+          .select("id, pool_id, invested_amount, current_value, units_owned, investment_pools(name, pool_type, current_nav, exit_fee_percent, holding_period_days)")
           .eq("user_id", user.id),
         supabase.from("profiles").select("full_name").eq("id", user.id).maybeSingle(),
       ]);
@@ -59,7 +68,7 @@ function HomePage() {
     return () => {
       cancelled = true;
     };
-  }, [user]);
+  }, [user, reloadTick]);
 
   const totalValue = investments.reduce((s, i) => s + Number(i.current_value ?? 0), 0);
   const totalInvested = investments.reduce((s, i) => s + Number(i.invested_amount ?? 0), 0);
@@ -219,12 +228,39 @@ function HomePage() {
                       </p>
                     </div>
                   </div>
+                  {value > 0 && (
+                    <button
+                      onClick={() => setWithdrawTarget(inv)}
+                      className="mt-3 w-full glass rounded-lg t-gold"
+                      style={{
+                        fontFamily: "var(--font-display)",
+                        letterSpacing: "0.08em",
+                        fontSize: 10,
+                        padding: "8px 12px",
+                      }}
+                    >
+                      WITHDRAW
+                    </button>
+                  )}
                 </div>
               );
             })}
           </div>
         )}
       </section>
+      {withdrawTarget && (
+        <WithdrawModal
+          holding={{
+            pool_id: withdrawTarget.pool_id,
+            pool_name: withdrawTarget.investment_pools?.name ?? "Pool",
+            current_value: Number(withdrawTarget.current_value ?? 0),
+            exit_fee_percent: Number(withdrawTarget.investment_pools?.exit_fee_percent ?? 0),
+            holding_period_days: Number(withdrawTarget.investment_pools?.holding_period_days ?? 0),
+          }}
+          onClose={() => setWithdrawTarget(null)}
+          onSuccess={() => setReloadTick((t) => t + 1)}
+        />
+      )}
     </div>
   );
 }
