@@ -11,6 +11,46 @@ export function DepositModal({ pool, onClose }: Props) {
   const [amount, setAmount] = useState(String(pool.min_investment ?? 1000));
   const [phone, setPhone] = useState("");
   const [busy, setBusy] = useState(false);
+  const [polling, setPolling] = useState<null | "waiting" | "confirmed" | "failed" | "cancelled">(
+    null,
+  );
+
+  const pollStatus = async (transactionId: string, token: string) => {
+    setPolling("waiting");
+    // Poll every 4s for up to ~2 minutes (30 attempts)
+    for (let i = 0; i < 30; i++) {
+      await new Promise((r) => setTimeout(r, 4000));
+      try {
+        const res = await fetch("/api/mpesa-status", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ transaction_id: transactionId }),
+        });
+        const data = (await res.json()) as { status?: string; result_desc?: string };
+        if (data.status === "confirmed") {
+          setPolling("confirmed");
+          toast.success("Deposit confirmed ✓");
+          setTimeout(onClose, 1200);
+          return;
+        }
+        if (data.status === "failed" || data.status === "cancelled") {
+          setPolling(data.status);
+          toast.error(
+            data.status === "cancelled"
+              ? "Payment cancelled"
+              : data.result_desc || "Payment failed",
+          );
+          return;
+        }
+      } catch {
+        // Ignore transient errors and keep polling
+      }
+    }
+    // Timed out — leave as pending; callback may still settle
+    setPolling(null);
+    toast.message("Still waiting for M-Pesa. We'll notify you when it confirms.");
+    onClose();
+  };
 
   const submit = async () => {
     if (busy) return;
@@ -31,16 +71,21 @@ export function DepositModal({ pool, onClose }: Props) {
         },
         body: JSON.stringify({ amount: Number(amount), phone, pool_id: pool.id }),
       });
-      const data = await res.json();
-      if (!res.ok || data.error) {
+      const data = (await res.json()) as {
+        error?: string;
+        message?: string;
+        transaction_id?: string;
+      };
+      if (!res.ok || data.error || !data.transaction_id) {
         toast.error(data.error || "STK Push failed");
-      } else {
-        toast.success(data.message || "Check your phone");
-        onClose();
+        setBusy(false);
+        return;
       }
+      toast.success(data.message || "Check your phone");
+      // Start polling — keep modal open so the user sees status updates
+      pollStatus(data.transaction_id, token);
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Network error");
-    } finally {
       setBusy(false);
     }
   };
