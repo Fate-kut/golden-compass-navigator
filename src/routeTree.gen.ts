@@ -22,6 +22,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiWithdrawRequestRouteImport } from './routes/api/withdraw-request'
 import { Route as ApiWithdrawApproveRouteImport } from './routes/api/withdraw-approve'
 import { Route as ApiMpesaStkRouteImport } from './routes/api/mpesa-stk'
+import { Route as ApiMpesaStatusRouteImport } from './routes/api/mpesa-status'
 import { Route as ApiMpesaCallbackRouteImport } from './routes/api/mpesa-callback'
 import { Route as AdminTransactionsRouteImport } from './routes/admin.transactions'
 import { Route as AdminKycRouteImport } from './routes/admin.kyc'
@@ -91,6 +92,11 @@ const ApiMpesaStkRoute = ApiMpesaStkRouteImport.update({
   path: '/api/mpesa-stk',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiMpesaStatusRoute = ApiMpesaStatusRouteImport.update({
+  id: '/api/mpesa-status',
+  path: '/api/mpesa-status',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiMpesaCallbackRoute = ApiMpesaCallbackRouteImport.update({
   id: '/api/mpesa-callback',
   path: '/api/mpesa-callback',
@@ -121,6 +127,7 @@ export interface FileRoutesByFullPath {
   '/admin/kyc': typeof AdminKycRoute
   '/admin/transactions': typeof AdminTransactionsRoute
   '/api/mpesa-callback': typeof ApiMpesaCallbackRoute
+  '/api/mpesa-status': typeof ApiMpesaStatusRoute
   '/api/mpesa-stk': typeof ApiMpesaStkRoute
   '/api/withdraw-approve': typeof ApiWithdrawApproveRoute
   '/api/withdraw-request': typeof ApiWithdrawRequestRoute
@@ -139,6 +146,7 @@ export interface FileRoutesByTo {
   '/admin/kyc': typeof AdminKycRoute
   '/admin/transactions': typeof AdminTransactionsRoute
   '/api/mpesa-callback': typeof ApiMpesaCallbackRoute
+  '/api/mpesa-status': typeof ApiMpesaStatusRoute
   '/api/mpesa-stk': typeof ApiMpesaStkRoute
   '/api/withdraw-approve': typeof ApiWithdrawApproveRoute
   '/api/withdraw-request': typeof ApiWithdrawRequestRoute
@@ -158,6 +166,7 @@ export interface FileRoutesById {
   '/admin/kyc': typeof AdminKycRoute
   '/admin/transactions': typeof AdminTransactionsRoute
   '/api/mpesa-callback': typeof ApiMpesaCallbackRoute
+  '/api/mpesa-status': typeof ApiMpesaStatusRoute
   '/api/mpesa-stk': typeof ApiMpesaStkRoute
   '/api/withdraw-approve': typeof ApiWithdrawApproveRoute
   '/api/withdraw-request': typeof ApiWithdrawRequestRoute
@@ -178,6 +187,7 @@ export interface FileRouteTypes {
     | '/admin/kyc'
     | '/admin/transactions'
     | '/api/mpesa-callback'
+    | '/api/mpesa-status'
     | '/api/mpesa-stk'
     | '/api/withdraw-approve'
     | '/api/withdraw-request'
@@ -196,6 +206,7 @@ export interface FileRouteTypes {
     | '/admin/kyc'
     | '/admin/transactions'
     | '/api/mpesa-callback'
+    | '/api/mpesa-status'
     | '/api/mpesa-stk'
     | '/api/withdraw-approve'
     | '/api/withdraw-request'
@@ -214,6 +225,7 @@ export interface FileRouteTypes {
     | '/admin/kyc'
     | '/admin/transactions'
     | '/api/mpesa-callback'
+    | '/api/mpesa-status'
     | '/api/mpesa-stk'
     | '/api/withdraw-approve'
     | '/api/withdraw-request'
@@ -231,6 +243,7 @@ export interface RootRouteChildren {
   ProfileRoute: typeof ProfileRoute
   SignupRoute: typeof SignupRoute
   ApiMpesaCallbackRoute: typeof ApiMpesaCallbackRoute
+  ApiMpesaStatusRoute: typeof ApiMpesaStatusRoute
   ApiMpesaStkRoute: typeof ApiMpesaStkRoute
   ApiWithdrawApproveRoute: typeof ApiWithdrawApproveRoute
   ApiWithdrawRequestRoute: typeof ApiWithdrawRequestRoute
@@ -329,6 +342,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiMpesaStkRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/mpesa-status': {
+      id: '/api/mpesa-status'
+      path: '/api/mpesa-status'
+      fullPath: '/api/mpesa-status'
+      preLoaderRoute: typeof ApiMpesaStatusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/mpesa-callback': {
       id: '/api/mpesa-callback'
       path: '/api/mpesa-callback'
@@ -377,6 +397,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProfileRoute: ProfileRoute,
   SignupRoute: SignupRoute,
   ApiMpesaCallbackRoute: ApiMpesaCallbackRoute,
+  ApiMpesaStatusRoute: ApiMpesaStatusRoute,
   ApiMpesaStkRoute: ApiMpesaStkRoute,
   ApiWithdrawApproveRoute: ApiWithdrawApproveRoute,
   ApiWithdrawRequestRoute: ApiWithdrawRequestRoute,
