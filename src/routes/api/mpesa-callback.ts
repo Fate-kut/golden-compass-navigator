@@ -35,9 +35,11 @@ export const Route = createFileRoute("/api/mpesa-callback")({
           if (tx.status === "confirmed") return ack(); // idempotent
 
           if (cb.ResultCode !== 0) {
+            // 1032 = user cancelled; otherwise generic failure
+            const newStatus = cb.ResultCode === 1032 ? "cancelled" : "failed";
             await supabaseAdmin
               .from("transactions")
-              .update({ status: "failed" })
+              .update({ status: newStatus })
               .eq("id", tx.id);
             return ack();
           }
