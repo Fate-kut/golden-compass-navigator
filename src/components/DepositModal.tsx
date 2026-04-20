@@ -143,13 +143,50 @@ export function DepositModal({ pool, onClose }: Props) {
           Min: KES {pool.min_investment ?? 1}. You'll receive an STK prompt to enter your PIN.
         </p>
 
+        {polling === "waiting" && (
+          <div className="glass rounded-lg p-3 mb-3 text-center">
+            <p className="t-mono t-gold animate-pulse" style={{ fontSize: 11, letterSpacing: "0.14em" }}>
+              ⏳ AWAITING M-PESA PIN…
+            </p>
+            <p className="t-mono t-muted mt-1" style={{ fontSize: 9 }}>
+              Enter your PIN on the prompt. We're checking every few seconds.
+            </p>
+          </div>
+        )}
+        {polling === "confirmed" && (
+          <div className="glass rounded-lg p-3 mb-3 text-center">
+            <p className="t-mono t-gold" style={{ fontSize: 11, letterSpacing: "0.14em" }}>
+              ✅ PAYMENT CONFIRMED
+            </p>
+          </div>
+        )}
+        {(polling === "failed" || polling === "cancelled") && (
+          <div className="glass rounded-lg p-3 mb-3 text-center">
+            <p className="t-mono" style={{ fontSize: 11, letterSpacing: "0.14em", color: "#e85d3a" }}>
+              {polling === "cancelled" ? "✗ PAYMENT CANCELLED" : "✗ PAYMENT FAILED"}
+            </p>
+          </div>
+        )}
+
         <button
           onClick={submit}
-          disabled={busy}
+          disabled={busy || polling === "waiting" || polling === "confirmed"}
           className="btn-brass w-full"
-          style={{ padding: "14px 16px", fontSize: 12, opacity: busy ? 0.6 : 1 }}
+          style={{
+            padding: "14px 16px",
+            fontSize: 12,
+            opacity: busy || polling === "waiting" || polling === "confirmed" ? 0.6 : 1,
+          }}
         >
-          {busy ? "SENDING…" : "SEND STK PUSH"}
+          {polling === "waiting"
+            ? "WAITING FOR PAYMENT…"
+            : polling === "confirmed"
+              ? "DONE"
+              : busy
+                ? "SENDING…"
+                : polling === "failed" || polling === "cancelled"
+                  ? "TRY AGAIN"
+                  : "SEND STK PUSH"}
         </button>
       </div>
     </div>
