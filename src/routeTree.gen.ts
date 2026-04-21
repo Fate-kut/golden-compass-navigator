@@ -21,6 +21,7 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiWithdrawRequestRouteImport } from './routes/api/withdraw-request'
 import { Route as ApiWithdrawApproveRouteImport } from './routes/api/withdraw-approve'
+import { Route as ApiWalletInvestRouteImport } from './routes/api/wallet-invest'
 import { Route as ApiMpesaStkRouteImport } from './routes/api/mpesa-stk'
 import { Route as ApiMpesaStatusRouteImport } from './routes/api/mpesa-status'
 import { Route as ApiMpesaCallbackRouteImport } from './routes/api/mpesa-callback'
@@ -88,6 +89,11 @@ const ApiWithdrawApproveRoute = ApiWithdrawApproveRouteImport.update({
   path: '/api/withdraw-approve',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiWalletInvestRoute = ApiWalletInvestRouteImport.update({
+  id: '/api/wallet-invest',
+  path: '/api/wallet-invest',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiMpesaStkRoute = ApiMpesaStkRouteImport.update({
   id: '/api/mpesa-stk',
   path: '/api/mpesa-stk',
@@ -136,6 +142,7 @@ export interface FileRoutesByFullPath {
   '/api/mpesa-callback': typeof ApiMpesaCallbackRoute
   '/api/mpesa-status': typeof ApiMpesaStatusRoute
   '/api/mpesa-stk': typeof ApiMpesaStkRoute
+  '/api/wallet-invest': typeof ApiWalletInvestRoute
   '/api/withdraw-approve': typeof ApiWithdrawApproveRoute
   '/api/withdraw-request': typeof ApiWithdrawRequestRoute
 }
@@ -156,6 +163,7 @@ export interface FileRoutesByTo {
   '/api/mpesa-callback': typeof ApiMpesaCallbackRoute
   '/api/mpesa-status': typeof ApiMpesaStatusRoute
   '/api/mpesa-stk': typeof ApiMpesaStkRoute
+  '/api/wallet-invest': typeof ApiWalletInvestRoute
   '/api/withdraw-approve': typeof ApiWithdrawApproveRoute
   '/api/withdraw-request': typeof ApiWithdrawRequestRoute
 }
@@ -177,6 +185,7 @@ export interface FileRoutesById {
   '/api/mpesa-callback': typeof ApiMpesaCallbackRoute
   '/api/mpesa-status': typeof ApiMpesaStatusRoute
   '/api/mpesa-stk': typeof ApiMpesaStkRoute
+  '/api/wallet-invest': typeof ApiWalletInvestRoute
   '/api/withdraw-approve': typeof ApiWithdrawApproveRoute
   '/api/withdraw-request': typeof ApiWithdrawRequestRoute
 }
@@ -199,6 +208,7 @@ export interface FileRouteTypes {
     | '/api/mpesa-callback'
     | '/api/mpesa-status'
     | '/api/mpesa-stk'
+    | '/api/wallet-invest'
     | '/api/withdraw-approve'
     | '/api/withdraw-request'
   fileRoutesByTo: FileRoutesByTo
@@ -219,6 +229,7 @@ export interface FileRouteTypes {
     | '/api/mpesa-callback'
     | '/api/mpesa-status'
     | '/api/mpesa-stk'
+    | '/api/wallet-invest'
     | '/api/withdraw-approve'
     | '/api/withdraw-request'
   id:
@@ -239,6 +250,7 @@ export interface FileRouteTypes {
     | '/api/mpesa-callback'
     | '/api/mpesa-status'
     | '/api/mpesa-stk'
+    | '/api/wallet-invest'
     | '/api/withdraw-approve'
     | '/api/withdraw-request'
   fileRoutesById: FileRoutesById
@@ -258,6 +270,7 @@ export interface RootRouteChildren {
   ApiMpesaCallbackRoute: typeof ApiMpesaCallbackRoute
   ApiMpesaStatusRoute: typeof ApiMpesaStatusRoute
   ApiMpesaStkRoute: typeof ApiMpesaStkRoute
+  ApiWalletInvestRoute: typeof ApiWalletInvestRoute
   ApiWithdrawApproveRoute: typeof ApiWithdrawApproveRoute
   ApiWithdrawRequestRoute: typeof ApiWithdrawRequestRoute
 }
@@ -348,6 +361,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiWithdrawApproveRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/wallet-invest': {
+      id: '/api/wallet-invest'
+      path: '/api/wallet-invest'
+      fullPath: '/api/wallet-invest'
+      preLoaderRoute: typeof ApiWalletInvestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/mpesa-stk': {
       id: '/api/mpesa-stk'
       path: '/api/mpesa-stk'
@@ -420,6 +440,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiMpesaCallbackRoute: ApiMpesaCallbackRoute,
   ApiMpesaStatusRoute: ApiMpesaStatusRoute,
   ApiMpesaStkRoute: ApiMpesaStkRoute,
+  ApiWalletInvestRoute: ApiWalletInvestRoute,
   ApiWithdrawApproveRoute: ApiWithdrawApproveRoute,
   ApiWithdrawRequestRoute: ApiWithdrawRequestRoute,
 }
