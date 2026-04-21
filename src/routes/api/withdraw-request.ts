@@ -24,10 +24,15 @@ export const Route = createFileRoute("/api/withdraw-request")({
           if (cErr || !claims?.claims?.sub) return json({ error: "Unauthorized" }, 401);
           const userId = claims.claims.sub;
 
-          const body = (await request.json()) as { pool_id?: string; amount?: number };
+          const body = (await request.json()) as { pool_id?: string; amount?: number; phone?: string };
           const pool_id = String(body.pool_id ?? "");
           const amount = Number(body.amount);
+          const phoneRaw = String(body.phone ?? "").replace(/\D/g, "");
+          let phone = phoneRaw;
+          if (phone.startsWith("0")) phone = "254" + phone.slice(1);
+          else if (phone.startsWith("7") || phone.startsWith("1")) phone = "254" + phone;
           if (!pool_id || !amount || amount <= 0) return json({ error: "Invalid input" }, 400);
+          if (!/^254(7|1)\d{8}$/.test(phone)) return json({ error: "Invalid M-Pesa phone number" }, 400);
 
           const [{ data: pool }, { data: inv }] = await Promise.all([
             supabaseAdmin
@@ -77,6 +82,7 @@ export const Route = createFileRoute("/api/withdraw-request")({
               amount: net, // net amount paid out
               type: "withdrawal",
               status: "pending",
+              payout_phone: phone,
             })
             .select("id")
             .single();

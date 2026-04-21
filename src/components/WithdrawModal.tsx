@@ -16,6 +16,7 @@ interface Props {
 
 export function WithdrawModal({ holding, onClose, onSuccess }: Props) {
   const [amount, setAmount] = useState(String(Math.floor(holding.current_value)));
+  const [phone, setPhone] = useState("");
   const [busy, setBusy] = useState(false);
 
   const amt = Number(amount) || 0;
@@ -36,7 +37,7 @@ export function WithdrawModal({ holding, onClose, onSuccess }: Props) {
       const res = await fetch("/api/withdraw-request", {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ pool_id: holding.pool_id, amount: amt }),
+        body: JSON.stringify({ pool_id: holding.pool_id, amount: amt, phone }),
       });
       const data = await res.json();
       if (!res.ok || data.error) {
@@ -90,6 +91,19 @@ export function WithdrawModal({ holding, onClose, onSuccess }: Props) {
           style={{ fontSize: 18 }}
         />
 
+        <label className="t-mono t-sec block mb-1" style={{ fontSize: 9, letterSpacing: "0.14em" }}>
+          M-PESA PAYOUT PHONE
+        </label>
+        <input
+          type="tel"
+          inputMode="numeric"
+          placeholder="07XX XXX XXX"
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+          className="w-full glass rounded-lg px-3 py-3 t-mono t-parch mb-3"
+          style={{ fontSize: 14 }}
+        />
+
         <div className="glass rounded-lg p-3 mb-4 space-y-1">
           <Row label="Available" value={`KES ${holding.current_value.toFixed(2)}`} />
           <Row label={`Exit fee (${holding.exit_fee_percent}%)`} value={`− KES ${fee.toFixed(2)}`} />
@@ -104,18 +118,18 @@ export function WithdrawModal({ holding, onClose, onSuccess }: Props) {
 
         <button
           onClick={submit}
-          disabled={busy || amt <= 0 || amt > holding.current_value}
+          disabled={busy || amt <= 0 || amt > holding.current_value || !phone}
           className="btn-brass w-full"
           style={{
             padding: "14px 16px",
             fontSize: 12,
-            opacity: busy || amt <= 0 || amt > holding.current_value ? 0.5 : 1,
+            opacity: busy || amt <= 0 || amt > holding.current_value || !phone ? 0.5 : 1,
           }}
         >
           {busy ? "REQUESTING…" : "REQUEST WITHDRAWAL"}
         </button>
         <p className="t-mono t-muted mt-3 text-center" style={{ fontSize: 9 }}>
-          Withdrawals are paid out within 24 hours after admin approval.
+          Auto-paid via M-Pesa within seconds of admin approval.
         </p>
       </div>
     </div>

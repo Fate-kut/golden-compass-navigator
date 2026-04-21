@@ -287,6 +287,7 @@ export type Database = {
           id: string
           mpesa_checkout_id: string | null
           mpesa_reference: string | null
+          payout_phone: string | null
           pool_id: string | null
           status: string | null
           type: string | null
@@ -299,6 +300,7 @@ export type Database = {
           id?: string
           mpesa_checkout_id?: string | null
           mpesa_reference?: string | null
+          payout_phone?: string | null
           pool_id?: string | null
           status?: string | null
           type?: string | null
@@ -311,6 +313,7 @@ export type Database = {
           id?: string
           mpesa_checkout_id?: string | null
           mpesa_reference?: string | null
+          payout_phone?: string | null
           pool_id?: string | null
           status?: string | null
           type?: string | null
