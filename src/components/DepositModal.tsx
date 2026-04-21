@@ -125,14 +125,35 @@ export function DepositModal({ pool, onClose, onSuccess }: Props) {
         <div className="flex items-start justify-between mb-4">
           <div>
             <p className="t-mono t-sec" style={{ fontSize: 9, letterSpacing: "0.18em" }}>
-              DEPOSIT VIA M-PESA
+              INVEST INTO
             </p>
             <h2 className="t-display t-gold mt-1" style={{ fontSize: 18 }}>
               {pool.name}
             </h2>
           </div>
-          <button onClick={onClose} className="t-gold" style={{ fontSize: 22 }}>
-            ×
+          <button onClick={onClose} className="t-gold" style={{ fontSize: 22 }}>×</button>
+        </div>
+
+        {/* Mode toggle */}
+        <div className="grid grid-cols-2 gap-2 mb-4">
+          <button
+            onClick={() => setMode("wallet")}
+            className={mode === "wallet" ? "btn-brass" : "glass rounded-lg t-gold"}
+            style={{ padding: "10px 8px", fontSize: 10, letterSpacing: "0.1em" }}
+          >
+            FROM WALLET
+            {walletBal !== null && (
+              <span className="block t-mono" style={{ fontSize: 8, opacity: 0.8 }}>
+                KES {walletBal.toLocaleString()}
+              </span>
+            )}
+          </button>
+          <button
+            onClick={() => setMode("mpesa")}
+            className={mode === "mpesa" ? "btn-brass" : "glass rounded-lg t-gold"}
+            style={{ padding: "10px 8px", fontSize: 10, letterSpacing: "0.1em" }}
+          >
+            M-PESA STK
           </button>
         </div>
 
@@ -149,20 +170,25 @@ export function DepositModal({ pool, onClose, onSuccess }: Props) {
           style={{ fontSize: 18 }}
         />
 
-        <label className="t-mono t-sec block mb-1" style={{ fontSize: 9, letterSpacing: "0.14em" }}>
-          M-PESA PHONE
-        </label>
-        <input
-          type="tel"
-          inputMode="numeric"
-          placeholder="07XX XXX XXX"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-          className="w-full glass rounded-lg px-3 py-3 t-mono t-parch mb-2"
-          style={{ fontSize: 14 }}
-        />
+        {mode === "mpesa" && (
+          <>
+            <label className="t-mono t-sec block mb-1" style={{ fontSize: 9, letterSpacing: "0.14em" }}>
+              M-PESA PHONE
+            </label>
+            <input
+              type="tel"
+              inputMode="numeric"
+              placeholder="07XX XXX XXX"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              className="w-full glass rounded-lg px-3 py-3 t-mono t-parch mb-2"
+              style={{ fontSize: 14 }}
+            />
+          </>
+        )}
         <p className="t-mono t-muted mb-4" style={{ fontSize: 9 }}>
-          Min: KES {pool.min_investment ?? 1}. You'll receive an STK prompt to enter your PIN.
+          Min: KES {pool.min_investment ?? 1}.{" "}
+          {mode === "mpesa" ? "You'll receive an STK prompt." : "Funds debited from your wallet instantly."}
         </p>
 
         {polling === "waiting" && (
