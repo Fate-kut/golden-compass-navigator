@@ -7,6 +7,7 @@ import { Sparkline } from "@/components/Sparkline";
 import { TiltCard } from "@/components/TiltCard";
 import { NotificationBell } from "@/components/NotificationBell";
 import { WithdrawModal } from "@/components/WithdrawModal";
+import { WalletDepositModal } from "@/components/WalletDepositModal";
 
 export const Route = createFileRoute("/home")({
   head: () => ({
@@ -44,6 +45,8 @@ function HomePage() {
   const [fullName, setFullName] = useState("Investor");
   const [withdrawTarget, setWithdrawTarget] = useState<InvestmentRow | null>(null);
   const [reloadTick, setReloadTick] = useState(0);
+  const [showDeposit, setShowDeposit] = useState(false);
+  const [walletBal, setWalletBal] = useState(0);
 
   useEffect(() => {
     if (!authLoading && !user) navigate({ to: "/login" });
@@ -58,11 +61,12 @@ function HomePage() {
           .from("user_investments")
           .select("id, pool_id, invested_amount, current_value, units_owned, investment_pools(name, pool_type, current_nav, exit_fee_percent, holding_period_days)")
           .eq("user_id", user.id),
-        supabase.from("profiles").select("full_name").eq("id", user.id).maybeSingle(),
+        supabase.from("profiles").select("full_name, wallet_balance").eq("id", user.id).maybeSingle(),
       ]);
       if (cancelled) return;
       setInvestments((invs as unknown as InvestmentRow[]) ?? []);
       if (profile?.full_name) setFullName(profile.full_name.split(" ")[0]);
+      setWalletBal(Number(profile?.wallet_balance ?? 0));
       setLoading(false);
     })();
     return () => {
@@ -155,9 +159,23 @@ function HomePage() {
             )}
           </div>
 
-          <div className="mt-5 grid grid-cols-2 gap-3">
+          <div className="mt-4 glass rounded-lg p-3 flex items-center justify-between">
+            <div>
+              <p className="t-mono t-sec" style={{ fontSize: 9, letterSpacing: "0.14em" }}>WALLET</p>
+              <p className="t-display t-gold mt-1" style={{ fontSize: 16 }}>{KES(walletBal)}</p>
+            </div>
+            <button
+              onClick={() => setShowDeposit(true)}
+              className="btn-brass"
+              style={{ padding: "10px 14px", fontSize: 10 }}
+            >
+              + DEPOSIT
+            </button>
+          </div>
+
+          <div className="mt-3 grid grid-cols-2 gap-3">
             <Link to="/pools" className="btn-brass" style={{ padding: "12px 16px", fontSize: 11 }}>
-              Deposit
+              Invest
             </Link>
             <Link
               to="/history"

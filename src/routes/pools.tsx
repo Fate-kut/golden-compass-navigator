@@ -171,6 +171,7 @@ function PoolsPage() {
             min_investment: depositPool.min_investment,
           }}
           onClose={() => setDepositPool(null)}
+          onSuccess={() => setDepositPool(null)}
         />
       )}
     </div>
