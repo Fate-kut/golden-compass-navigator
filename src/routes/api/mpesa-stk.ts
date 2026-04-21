@@ -24,28 +24,31 @@ export const Route = createFileRoute("/api/mpesa-stk")({
           if (claimsErr || !claims?.claims?.sub) return json({ error: "Unauthorized" }, 401);
           const userId = claims.claims.sub;
 
-          const body = (await request.json()) as { amount?: number; pool_id?: string; phone?: string };
+          const body = (await request.json()) as { amount?: number; pool_id?: string | null; phone?: string };
           const amount = Math.floor(Number(body.amount));
-          const pool_id = String(body.pool_id ?? "");
+          const pool_id = body.pool_id ? String(body.pool_id) : null;
           const phoneRaw = String(body.phone ?? "").replace(/\D/g, "");
 
           if (!amount || amount < 1) return json({ error: "Amount must be at least KES 1" }, 400);
-          if (!pool_id) return json({ error: "pool_id required" }, 400);
-          // Normalize phone: 07XX → 2547XX, 7XX → 2547XX, +2547XX → 2547XX
+          // Normalize phone
           let phone = phoneRaw;
           if (phone.startsWith("0")) phone = "254" + phone.slice(1);
           else if (phone.startsWith("7") || phone.startsWith("1")) phone = "254" + phone;
           if (!/^254(7|1)\d{8}$/.test(phone)) return json({ error: "Invalid Kenyan phone number" }, 400);
 
-          // Verify pool & min investment
-          const { data: pool } = await supabaseAdmin
-            .from("investment_pools")
-            .select("id, min_investment, is_active, name")
-            .eq("id", pool_id)
-            .maybeSingle();
-          if (!pool || !pool.is_active) return json({ error: "Pool not available" }, 400);
-          if (amount < Number(pool.min_investment ?? 0))
-            return json({ error: `Minimum investment is KES ${pool.min_investment}` }, 400);
+          // Verify pool & min investment (only if pool_id provided)
+          let pool: { id: string; name: string; min_investment: number | null } | null = null;
+          if (pool_id) {
+            const { data: p } = await supabaseAdmin
+              .from("investment_pools")
+              .select("id, min_investment, is_active, name")
+              .eq("id", pool_id)
+              .maybeSingle();
+            if (!p || !p.is_active) return json({ error: "Pool not available" }, 400);
+            if (amount < Number(p.min_investment ?? 0))
+              return json({ error: `Minimum investment is KES ${p.min_investment}` }, 400);
+            pool = { id: p.id, name: p.name, min_investment: p.min_investment };
+          }
 
           // Daraja credentials
           const consumerKey = process.env.MPESA_CONSUMER_KEY;
