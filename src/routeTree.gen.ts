@@ -24,6 +24,7 @@ import { Route as ApiWithdrawApproveRouteImport } from './routes/api/withdraw-ap
 import { Route as ApiMpesaStkRouteImport } from './routes/api/mpesa-stk'
 import { Route as ApiMpesaStatusRouteImport } from './routes/api/mpesa-status'
 import { Route as ApiMpesaCallbackRouteImport } from './routes/api/mpesa-callback'
+import { Route as ApiMpesaB2cResultRouteImport } from './routes/api/mpesa-b2c-result'
 import { Route as AdminTransactionsRouteImport } from './routes/admin.transactions'
 import { Route as AdminKycRouteImport } from './routes/admin.kyc'
 
@@ -102,6 +103,11 @@ const ApiMpesaCallbackRoute = ApiMpesaCallbackRouteImport.update({
   path: '/api/mpesa-callback',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiMpesaB2cResultRoute = ApiMpesaB2cResultRouteImport.update({
+  id: '/api/mpesa-b2c-result',
+  path: '/api/mpesa-b2c-result',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminTransactionsRoute = AdminTransactionsRouteImport.update({
   id: '/transactions',
   path: '/transactions',
@@ -126,6 +132,7 @@ export interface FileRoutesByFullPath {
   '/signup': typeof SignupRoute
   '/admin/kyc': typeof AdminKycRoute
   '/admin/transactions': typeof AdminTransactionsRoute
+  '/api/mpesa-b2c-result': typeof ApiMpesaB2cResultRoute
   '/api/mpesa-callback': typeof ApiMpesaCallbackRoute
   '/api/mpesa-status': typeof ApiMpesaStatusRoute
   '/api/mpesa-stk': typeof ApiMpesaStkRoute
@@ -145,6 +152,7 @@ export interface FileRoutesByTo {
   '/signup': typeof SignupRoute
   '/admin/kyc': typeof AdminKycRoute
   '/admin/transactions': typeof AdminTransactionsRoute
+  '/api/mpesa-b2c-result': typeof ApiMpesaB2cResultRoute
   '/api/mpesa-callback': typeof ApiMpesaCallbackRoute
   '/api/mpesa-status': typeof ApiMpesaStatusRoute
   '/api/mpesa-stk': typeof ApiMpesaStkRoute
@@ -165,6 +173,7 @@ export interface FileRoutesById {
   '/signup': typeof SignupRoute
   '/admin/kyc': typeof AdminKycRoute
   '/admin/transactions': typeof AdminTransactionsRoute
+  '/api/mpesa-b2c-result': typeof ApiMpesaB2cResultRoute
   '/api/mpesa-callback': typeof ApiMpesaCallbackRoute
   '/api/mpesa-status': typeof ApiMpesaStatusRoute
   '/api/mpesa-stk': typeof ApiMpesaStkRoute
@@ -186,6 +195,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/admin/kyc'
     | '/admin/transactions'
+    | '/api/mpesa-b2c-result'
     | '/api/mpesa-callback'
     | '/api/mpesa-status'
     | '/api/mpesa-stk'
@@ -205,6 +215,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/admin/kyc'
     | '/admin/transactions'
+    | '/api/mpesa-b2c-result'
     | '/api/mpesa-callback'
     | '/api/mpesa-status'
     | '/api/mpesa-stk'
@@ -224,6 +235,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/admin/kyc'
     | '/admin/transactions'
+    | '/api/mpesa-b2c-result'
     | '/api/mpesa-callback'
     | '/api/mpesa-status'
     | '/api/mpesa-stk'
@@ -242,6 +254,7 @@ export interface RootRouteChildren {
   PoolsRoute: typeof PoolsRoute
   ProfileRoute: typeof ProfileRoute
   SignupRoute: typeof SignupRoute
+  ApiMpesaB2cResultRoute: typeof ApiMpesaB2cResultRoute
   ApiMpesaCallbackRoute: typeof ApiMpesaCallbackRoute
   ApiMpesaStatusRoute: typeof ApiMpesaStatusRoute
   ApiMpesaStkRoute: typeof ApiMpesaStkRoute
@@ -356,6 +369,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiMpesaCallbackRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/mpesa-b2c-result': {
+      id: '/api/mpesa-b2c-result'
+      path: '/api/mpesa-b2c-result'
+      fullPath: '/api/mpesa-b2c-result'
+      preLoaderRoute: typeof ApiMpesaB2cResultRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/transactions': {
       id: '/admin/transactions'
       path: '/transactions'
@@ -396,6 +416,7 @@ const rootRouteChildren: RootRouteChildren = {
   PoolsRoute: PoolsRoute,
   ProfileRoute: ProfileRoute,
   SignupRoute: SignupRoute,
+  ApiMpesaB2cResultRoute: ApiMpesaB2cResultRoute,
   ApiMpesaCallbackRoute: ApiMpesaCallbackRoute,
   ApiMpesaStatusRoute: ApiMpesaStatusRoute,
   ApiMpesaStkRoute: ApiMpesaStkRoute,
