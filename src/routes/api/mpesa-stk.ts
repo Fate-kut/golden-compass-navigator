@@ -99,7 +99,7 @@ export const Route = createFileRoute("/api/mpesa-stk")({
             PhoneNumber: phone,
             CallBackURL: callbackUrl,
             AccountReference: `GC-${tx.id.slice(0, 8)}`,
-            TransactionDesc: `Deposit to ${pool.name}`,
+            TransactionDesc: pool ? `Deposit to ${pool.name}` : `Wallet top-up`,
           };
 
           const stkRes = await fetch("https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest", {
