@@ -12,9 +12,19 @@ export function DepositModal({ pool, onClose, onSuccess }: Props) {
   const [amount, setAmount] = useState(String(pool.min_investment ?? 1000));
   const [phone, setPhone] = useState("");
   const [busy, setBusy] = useState(false);
-  const [polling, setPolling] = useState<null | "waiting" | "confirmed" | "failed" | "cancelled">(
-    null,
-  );
+  const [mode, setMode] = useState<"wallet" | "mpesa">("wallet");
+  const [walletBal, setWalletBal] = useState<number | null>(null);
+  const [polling, setPolling] = useState<null | "waiting" | "confirmed" | "failed" | "cancelled">(null);
+
+  useEffect(() => {
+    (async () => {
+      const { data: sess } = await supabase.auth.getSession();
+      const uid = sess.session?.user?.id;
+      if (!uid) return;
+      const { data } = await supabase.from("profiles").select("wallet_balance").eq("id", uid).maybeSingle();
+      setWalletBal(Number(data?.wallet_balance ?? 0));
+    })();
+  }, []);
 
   const pollStatus = async (transactionId: string, token: string) => {
     setPolling("waiting");
