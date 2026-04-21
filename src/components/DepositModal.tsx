@@ -41,6 +41,7 @@ export function DepositModal({ pool, onClose, onSuccess }: Props) {
         if (data.status === "confirmed") {
           setPolling("confirmed");
           toast.success("Deposit confirmed ✓");
+          onSuccess?.();
           setTimeout(onClose, 1200);
           return;
         }
@@ -74,26 +75,36 @@ export function DepositModal({ pool, onClose, onSuccess }: Props) {
         setBusy(false);
         return;
       }
+      if (mode === "wallet") {
+        const res = await fetch("/api/wallet-invest", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ amount: Number(amount), pool_id: pool.id }),
+        });
+        const data = (await res.json()) as { error?: string; success?: boolean; new_balance?: number };
+        if (!res.ok || !data.success) {
+          toast.error(data.error || "Investment failed");
+          setBusy(false);
+          return;
+        }
+        toast.success("Invested from wallet ✓");
+        if (typeof data.new_balance === "number") setWalletBal(data.new_balance);
+        onSuccess?.();
+        setTimeout(onClose, 800);
+        return;
+      }
       const res = await fetch("/api/mpesa-stk", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({ amount: Number(amount), phone, pool_id: pool.id }),
       });
-      const data = (await res.json()) as {
-        error?: string;
-        message?: string;
-        transaction_id?: string;
-      };
+      const data = (await res.json()) as { error?: string; message?: string; transaction_id?: string };
       if (!res.ok || data.error || !data.transaction_id) {
         toast.error(data.error || "STK Push failed");
         setBusy(false);
         return;
       }
       toast.success(data.message || "Check your phone");
-      // Start polling — keep modal open so the user sees status updates
       pollStatus(data.transaction_id, token);
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Network error");
