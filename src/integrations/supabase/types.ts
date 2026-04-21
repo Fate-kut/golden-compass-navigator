@@ -256,6 +256,7 @@ export type Database = {
           last_login: string | null
           phone: string | null
           updated_at: string
+          wallet_balance: number
         }
         Insert: {
           created_at?: string
@@ -266,6 +267,7 @@ export type Database = {
           last_login?: string | null
           phone?: string | null
           updated_at?: string
+          wallet_balance?: number
         }
         Update: {
           created_at?: string
@@ -276,6 +278,7 @@ export type Database = {
           last_login?: string | null
           phone?: string | null
           updated_at?: string
+          wallet_balance?: number
         }
         Relationships: []
       }

@@ -95,6 +95,24 @@ export const Route = createFileRoute("/api/mpesa-callback")({
                 units_owned: units,
               });
             }
+          } else if (tx.type === "deposit" && !tx.pool_id) {
+            // Wallet top-up: credit profile wallet_balance
+            const { data: prof } = await supabaseAdmin
+              .from("profiles")
+              .select("wallet_balance")
+              .eq("id", tx.user_id)
+              .maybeSingle();
+            const newBal = Number(prof?.wallet_balance ?? 0) + Number(tx.amount);
+            await supabaseAdmin
+              .from("profiles")
+              .update({ wallet_balance: newBal })
+              .eq("id", tx.user_id);
+            await supabaseAdmin.from("notifications").insert({
+              user_id: tx.user_id,
+              type: "deposit",
+              title: "Wallet credited",
+              body: `KES ${Number(tx.amount).toLocaleString()} added to your wallet.`,
+            });
           }
 
           return ack();
