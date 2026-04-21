@@ -279,6 +279,12 @@ function HomePage() {
           onSuccess={() => setReloadTick((t) => t + 1)}
         />
       )}
+      {showDeposit && (
+        <WalletDepositModal
+          onClose={() => setShowDeposit(false)}
+          onSuccess={() => setReloadTick((t) => t + 1)}
+        />
+      )}
     </div>
   );
 }
