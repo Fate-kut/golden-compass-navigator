@@ -42,7 +42,8 @@ function SignupPage() {
     try {
       await signUp(email, password, fullName, phone);
       setSuccess(true);
-      setTimeout(() => navigate({ to: "/login" }), 1500);
+      // Auto-confirm is enabled — user is signed in instantly. Go straight to home.
+      setTimeout(() => navigate({ to: "/home" }), 800);
     } catch (err: any) {
       setError(err.message || "Registration failed");
       setLoading(false);
@@ -127,10 +128,10 @@ function SignupPage() {
               {success ? (
                 <div className="text-center py-4">
                   <p className="t-display t-gold" style={{ fontSize: 14 }}>
-                    ✓ Check your email to confirm
+                    ✓ Welcome aboard
                   </p>
                   <p className="t-mono t-muted mt-2" style={{ fontSize: 10 }}>
-                    Redirecting to login...
+                    Setting your course...
                   </p>
                 </div>
               ) : (
