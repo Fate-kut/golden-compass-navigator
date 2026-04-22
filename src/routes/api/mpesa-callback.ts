@@ -60,43 +60,9 @@ export const Route = createFileRoute("/api/mpesa-callback")({
             })
             .eq("id", tx.id);
 
-          // Apply to user_investments (deposit only — withdrawals don't go through STK callback)
-          if (tx.type === "deposit" && tx.pool_id) {
-            const { data: pool } = await supabaseAdmin
-              .from("investment_pools")
-              .select("current_nav")
-              .eq("id", tx.pool_id)
-              .maybeSingle();
-            const nav = Number(pool?.current_nav ?? 100);
-            const units = Number(tx.amount) / nav;
-
-            const { data: existing } = await supabaseAdmin
-              .from("user_investments")
-              .select("id, invested_amount, current_value, units_owned")
-              .eq("user_id", tx.user_id)
-              .eq("pool_id", tx.pool_id)
-              .maybeSingle();
-
-            if (existing) {
-              await supabaseAdmin
-                .from("user_investments")
-                .update({
-                  invested_amount: Number(existing.invested_amount ?? 0) + Number(tx.amount),
-                  current_value: Number(existing.current_value ?? 0) + Number(tx.amount),
-                  units_owned: Number(existing.units_owned ?? 0) + units,
-                })
-                .eq("id", existing.id);
-            } else {
-              await supabaseAdmin.from("user_investments").insert({
-                user_id: tx.user_id,
-                pool_id: tx.pool_id,
-                invested_amount: Number(tx.amount),
-                current_value: Number(tx.amount),
-                units_owned: units,
-              });
-            }
-          } else if (tx.type === "deposit" && !tx.pool_id) {
-            // Wallet top-up: credit profile wallet_balance
+          // Deposits ALWAYS credit the wallet — never touch user_investments here.
+          // Pool investing happens separately via /api/wallet-invest.
+          if (tx.type === "deposit") {
             const { data: prof } = await supabaseAdmin
               .from("profiles")
               .select("wallet_balance")
