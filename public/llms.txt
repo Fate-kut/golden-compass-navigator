@@ -1,0 +1,10 @@
+# Golden Compass
+
+> AI-powered investment platform helping Kenyan investors grow wealth through curated pools, with M-Pesa deposits and a conversational AI Navigator.
+
+Golden Compass lets investors top up a wallet via M-Pesa, allocate funds into curated investment pools, monitor portfolio performance, and ask an AI Navigator about strategy and holdings.
+
+## Pages
+
+- [Sign in](/login): Existing investors sign in to their Golden Compass account.
+- [Sign up](/signup): Create a new Golden Compass investor account.

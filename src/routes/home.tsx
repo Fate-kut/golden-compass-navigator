@@ -12,9 +12,14 @@ import { WalletDepositModal } from "@/components/WalletDepositModal";
 export const Route = createFileRoute("/home")({
   head: () => ({
     meta: [
-      { title: "Home — Golden Compass" },
-      { name: "description", content: "Your investment portfolio dashboard" },
+      { title: "Investor Dashboard — Golden Compass" },
+      { name: "description", content: "Track your portfolio value, holdings, wallet balance and recent performance on Golden Compass." },
+      { name: "robots", content: "noindex, nofollow" },
+      { property: "og:title", content: "Investor Dashboard — Golden Compass" },
+      { property: "og:description", content: "Track your portfolio value, holdings and wallet balance." },
+      { property: "og:url", content: "/home" },
     ],
+    links: [{ rel: "canonical", href: "/home" }],
   }),
   component: HomePage,
 });
@@ -101,7 +106,7 @@ function HomePage() {
             WELCOME ABOARD
           </p>
           <h1 className="t-display t-gold mt-1" style={{ fontSize: 22 }}>
-            {fullName}
+            <span className="sr-only">Investor Dashboard — </span>{fullName}
           </h1>
         </div>
         <div className="flex items-center gap-2">
@@ -168,6 +173,7 @@ function HomePage() {
               onClick={() => setShowDeposit(true)}
               className="btn-brass"
               style={{ padding: "10px 14px", fontSize: 10 }}
+              aria-label="Deposit funds into wallet"
             >
               + DEPOSIT
             </button>
@@ -190,9 +196,9 @@ function HomePage() {
 
       {/* Holdings */}
       <section>
-        <h3 className="t-display t-gold mb-3" style={{ fontSize: 14, letterSpacing: "0.06em" }}>
+        <h2 className="t-display t-gold mb-3" style={{ fontSize: 14, letterSpacing: "0.06em" }}>
           Your Holdings
-        </h3>
+        </h2>
         {loading ? (
           <div className="space-y-3">
             <div className="skeleton h-20 w-full rounded-xl" />

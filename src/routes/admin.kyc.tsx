@@ -6,7 +6,15 @@ import { useUserRole } from "@/hooks/useUserRole";
 
 export const Route = createFileRoute("/admin/kyc")({
   head: () => ({
-    meta: [{ title: "KYC Queue — Admin" }],
+    meta: [
+      { title: "KYC Queue — Admin" },
+      { name: "description", content: "Review pending investor KYC submissions, approve or reject identity verification requests." },
+      { name: "robots", content: "noindex, nofollow" },
+      { property: "og:title", content: "KYC Queue — Admin" },
+      { property: "og:description", content: "Internal admin queue for KYC review decisions." },
+      { property: "og:url", content: "/admin/kyc" },
+    ],
+    links: [{ rel: "canonical", href: "/admin/kyc" }],
   }),
   component: AdminKycPage,
 });

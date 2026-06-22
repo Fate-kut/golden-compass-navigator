@@ -40,8 +40,7 @@ export const Route = createRootRoute({
       { title: "Golden Compass — Navigate Your Wealth" },
       { name: "description", content: "Golden Compass investment platform. Navigate your wealth with AI-powered portfolio management." },
       { name: "author", content: "Golden Compass" },
-      { property: "og:title", content: "Golden Compass — Navigate Your Wealth" },
-      { property: "og:description", content: "AI-powered investment platform" },
+      { property: "og:site_name", content: "Golden Compass" },
       { property: "og:type", content: "website" },
     ],
     links: [
@@ -51,6 +50,26 @@ export const Route = createRootRoute({
       {
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=IM+Fell+English:ital@0;1&family=Space+Mono:wght@400;700&display=swap",
+      },
+    ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": "Organization",
+              name: "Golden Compass",
+              description: "AI-powered investment platform helping Kenyan investors grow wealth through curated pools.",
+            },
+            {
+              "@type": "WebSite",
+              name: "Golden Compass",
+              description: "Navigate your wealth with AI-powered portfolio management.",
+            },
+          ],
+        }),
       },
     ],
   }),

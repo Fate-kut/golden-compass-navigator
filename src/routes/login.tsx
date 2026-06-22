@@ -7,9 +7,13 @@ import { useAuth } from "@/hooks/useAuth";
 export const Route = createFileRoute("/login")({
   head: () => ({
     meta: [
-      { title: "Login — Golden Compass" },
-      { name: "description", content: "Sign in to navigate your wealth with Golden Compass" },
+      { title: "Sign In — Golden Compass" },
+      { name: "description", content: "Sign in to Golden Compass to navigate your wealth with AI-powered portfolio management." },
+      { property: "og:title", content: "Sign In — Golden Compass" },
+      { property: "og:description", content: "Sign in to navigate your wealth with Golden Compass." },
+      { property: "og:url", content: "/login" },
     ],
+    links: [{ rel: "canonical", href: "/login" }],
   }),
   component: LoginPage,
 });

@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Disallow: /home
+Disallow: /pools
+Disallow: /history
+Disallow: /profile
+Disallow: /kyc
+Disallow: /navigator
+Disallow: /admin
+Disallow: /api/

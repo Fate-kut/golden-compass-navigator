@@ -8,8 +8,13 @@ export const Route = createFileRoute("/profile")({
   head: () => ({
     meta: [
       { title: "Profile — Golden Compass" },
-      { name: "description", content: "Your account, KYC status and settings" },
+      { name: "description", content: "Manage your Golden Compass account, KYC verification status and personal settings." },
+      { name: "robots", content: "noindex, nofollow" },
+      { property: "og:title", content: "Profile — Golden Compass" },
+      { property: "og:description", content: "Your account, KYC status and settings." },
+      { property: "og:url", content: "/profile" },
     ],
+    links: [{ rel: "canonical", href: "/profile" }],
   }),
   component: ProfilePage,
 });

@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as PoolsRouteImport } from './routes/pools'
@@ -29,6 +30,11 @@ import { Route as ApiMpesaB2cResultRouteImport } from './routes/api/mpesa-b2c-re
 import { Route as AdminTransactionsRouteImport } from './routes/admin.transactions'
 import { Route as AdminKycRouteImport } from './routes/admin.kyc'
 
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
   path: '/signup',
@@ -136,6 +142,7 @@ export interface FileRoutesByFullPath {
   '/pools': typeof PoolsRoute
   '/profile': typeof ProfileRoute
   '/signup': typeof SignupRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin/kyc': typeof AdminKycRoute
   '/admin/transactions': typeof AdminTransactionsRoute
   '/api/mpesa-b2c-result': typeof ApiMpesaB2cResultRoute
@@ -157,6 +164,7 @@ export interface FileRoutesByTo {
   '/pools': typeof PoolsRoute
   '/profile': typeof ProfileRoute
   '/signup': typeof SignupRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin/kyc': typeof AdminKycRoute
   '/admin/transactions': typeof AdminTransactionsRoute
   '/api/mpesa-b2c-result': typeof ApiMpesaB2cResultRoute
@@ -179,6 +187,7 @@ export interface FileRoutesById {
   '/pools': typeof PoolsRoute
   '/profile': typeof ProfileRoute
   '/signup': typeof SignupRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin/kyc': typeof AdminKycRoute
   '/admin/transactions': typeof AdminTransactionsRoute
   '/api/mpesa-b2c-result': typeof ApiMpesaB2cResultRoute
@@ -202,6 +211,7 @@ export interface FileRouteTypes {
     | '/pools'
     | '/profile'
     | '/signup'
+    | '/sitemap.xml'
     | '/admin/kyc'
     | '/admin/transactions'
     | '/api/mpesa-b2c-result'
@@ -223,6 +233,7 @@ export interface FileRouteTypes {
     | '/pools'
     | '/profile'
     | '/signup'
+    | '/sitemap.xml'
     | '/admin/kyc'
     | '/admin/transactions'
     | '/api/mpesa-b2c-result'
@@ -244,6 +255,7 @@ export interface FileRouteTypes {
     | '/pools'
     | '/profile'
     | '/signup'
+    | '/sitemap.xml'
     | '/admin/kyc'
     | '/admin/transactions'
     | '/api/mpesa-b2c-result'
@@ -266,6 +278,7 @@ export interface RootRouteChildren {
   PoolsRoute: typeof PoolsRoute
   ProfileRoute: typeof ProfileRoute
   SignupRoute: typeof SignupRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   ApiMpesaB2cResultRoute: typeof ApiMpesaB2cResultRoute
   ApiMpesaCallbackRoute: typeof ApiMpesaCallbackRoute
   ApiMpesaStatusRoute: typeof ApiMpesaStatusRoute
@@ -277,6 +290,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/signup': {
       id: '/signup'
       path: '/signup'
@@ -436,6 +456,7 @@ const rootRouteChildren: RootRouteChildren = {
   PoolsRoute: PoolsRoute,
   ProfileRoute: ProfileRoute,
   SignupRoute: SignupRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   ApiMpesaB2cResultRoute: ApiMpesaB2cResultRoute,
   ApiMpesaCallbackRoute: ApiMpesaCallbackRoute,
   ApiMpesaStatusRoute: ApiMpesaStatusRoute,

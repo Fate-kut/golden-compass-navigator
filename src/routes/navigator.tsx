@@ -5,6 +5,17 @@ import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/navigator")({
+  head: () => ({
+    meta: [
+      { title: "AI Navigator — Golden Compass" },
+      { name: "description", content: "Ask the Golden Compass AI Navigator about your portfolio, pools and investment strategy." },
+      { name: "robots", content: "noindex, nofollow" },
+      { property: "og:title", content: "AI Navigator — Golden Compass" },
+      { property: "og:description", content: "Your conversational guide to portfolio insights and pool questions." },
+      { property: "og:url", content: "/navigator" },
+    ],
+    links: [{ rel: "canonical", href: "/navigator" }],
+  }),
   component: NavigatorPage,
 });
 
