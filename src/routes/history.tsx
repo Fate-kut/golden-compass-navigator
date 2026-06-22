@@ -6,9 +6,14 @@ import { useAuth } from "@/hooks/useAuth";
 export const Route = createFileRoute("/history")({
   head: () => ({
     meta: [
-      { title: "History — Golden Compass" },
-      { name: "description", content: "Your deposit and withdrawal log" },
+      { title: "Transaction History — Golden Compass" },
+      { name: "description", content: "Your complete log of Golden Compass deposits, withdrawals and pool investments." },
+      { name: "robots", content: "noindex, nofollow" },
+      { property: "og:title", content: "Transaction History — Golden Compass" },
+      { property: "og:description", content: "Your deposit, withdrawal and investment log." },
+      { property: "og:url", content: "/history" },
     ],
+    links: [{ rel: "canonical", href: "/history" }],
   }),
   component: HistoryPage,
 });

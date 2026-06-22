@@ -9,8 +9,13 @@ export const Route = createFileRoute("/pools")({
   head: () => ({
     meta: [
       { title: "Investment Pools — Golden Compass" },
-      { name: "description", content: "Choose a pool to grow your wealth" },
+      { name: "description", content: "Browse Golden Compass investment pools and allocate wallet funds into the pool that fits your goals." },
+      { name: "robots", content: "noindex, nofollow" },
+      { property: "og:title", content: "Investment Pools — Golden Compass" },
+      { property: "og:description", content: "Browse and invest into curated Golden Compass pools." },
+      { property: "og:url", content: "/pools" },
     ],
+    links: [{ rel: "canonical", href: "/pools" }],
   }),
   component: PoolsPage,
 });

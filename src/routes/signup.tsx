@@ -8,8 +8,12 @@ export const Route = createFileRoute("/signup")({
   head: () => ({
     meta: [
       { title: "Sign Up — Golden Compass" },
-      { name: "description", content: "Join the fleet. Create your Golden Compass account." },
+      { name: "description", content: "Join the fleet. Create your Golden Compass account and start investing in curated pools." },
+      { property: "og:title", content: "Sign Up — Golden Compass" },
+      { property: "og:description", content: "Create your Golden Compass investor account." },
+      { property: "og:url", content: "/signup" },
     ],
+    links: [{ rel: "canonical", href: "/signup" }],
   }),
   component: SignupPage,
 });

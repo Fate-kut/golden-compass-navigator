@@ -7,8 +7,13 @@ export const Route = createFileRoute("/kyc")({
   head: () => ({
     meta: [
       { title: "KYC Verification — Golden Compass" },
-      { name: "description", content: "Verify your identity to start investing" },
+      { name: "description", content: "Verify your identity with Golden Compass to unlock deposits and pool investing." },
+      { name: "robots", content: "noindex, nofollow" },
+      { property: "og:title", content: "KYC Verification — Golden Compass" },
+      { property: "og:description", content: "Verify your identity to start investing." },
+      { property: "og:url", content: "/kyc" },
     ],
+    links: [{ rel: "canonical", href: "/kyc" }],
   }),
   component: KycPage,
 });

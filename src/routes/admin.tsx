@@ -8,8 +8,13 @@ export const Route = createFileRoute("/admin")({
   head: () => ({
     meta: [
       { title: "Admin — Golden Compass" },
-      { name: "description", content: "Operations panel" },
+      { name: "description", content: "Golden Compass operations panel: users, KYC queue, transactions and assets under management." },
+      { name: "robots", content: "noindex, nofollow" },
+      { property: "og:title", content: "Admin — Golden Compass" },
+      { property: "og:description", content: "Internal operations panel." },
+      { property: "og:url", content: "/admin" },
     ],
+    links: [{ rel: "canonical", href: "/admin" }],
   }),
   component: AdminHome,
 });
