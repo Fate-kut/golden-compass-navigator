@@ -6,7 +6,17 @@ import { useUserRole } from "@/hooks/useUserRole";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin/transactions")({
-  head: () => ({ meta: [{ title: "Transactions — Admin" }] }),
+  head: () => ({
+    meta: [
+      { title: "Transactions — Admin" },
+      { name: "description", content: "Admin ledger of all deposits and withdrawals; approve or reject pending withdrawal requests." },
+      { name: "robots", content: "noindex, nofollow" },
+      { property: "og:title", content: "Transactions — Admin" },
+      { property: "og:description", content: "Internal admin ledger and withdrawal approval queue." },
+      { property: "og:url", content: "/admin/transactions" },
+    ],
+    links: [{ rel: "canonical", href: "/admin/transactions" }],
+  }),
   component: AdminTxPage,
 });
 
