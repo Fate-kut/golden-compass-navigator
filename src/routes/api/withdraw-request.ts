@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { createClient } from "@supabase/supabase-js";
-import type { Database } from "@/integrations/supabase/types";
+import { rateLimit } from "@/lib/rate-limit.server";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { authenticateRequest, json } from "@/lib/auth.server";
 
 // Body: { pool_id: string, amount: number }
 // Enforces holding period & exit fee. Creates a 'pending' withdrawal transaction
@@ -11,22 +11,15 @@ export const Route = createFileRoute("/api/withdraw-request")({
     handlers: {
       POST: async ({ request }) => {
         try {
-          const auth = request.headers.get("authorization") ?? "";
-          const token = auth.startsWith("Bearer ") ? auth.slice(7) : "";
-          if (!token) return json({ error: "Unauthorized" }, 401);
-
-          const userClient = createClient<Database>(
-            process.env.SUPABASE_URL!,
-            process.env.SUPABASE_PUBLISHABLE_KEY!,
-            { global: { headers: { Authorization: `Bearer ${token}` } }, auth: { persistSession: false, autoRefreshToken: false } }
-          );
-          const { data: claims, error: cErr } = await userClient.auth.getClaims(token);
-          if (cErr || !claims?.claims?.sub) return json({ error: "Unauthorized" }, 401);
-          const userId = claims.claims.sub;
+          const authResult = await authenticateRequest(request);
+          if (authResult instanceof Response) return authResult;
+          const { userId } = authResult;
+          if (!rateLimit(userId, 5, 60_000)) return json({ error: "Too many requests" }, 429);
 
           const body = (await request.json()) as { pool_id?: string; amount?: number; phone?: string };
           const pool_id = String(body.pool_id ?? "");
           const amount = Number(body.amount);
+          if (amount <= 0) return json({ error: "Amount must be greater than 0" }, 400);
           const phoneRaw = String(body.phone ?? "").replace(/\D/g, "");
           let phone = phoneRaw;
           if (phone.startsWith("0")) phone = "254" + phone.slice(1);
@@ -90,7 +83,7 @@ export const Route = createFileRoute("/api/withdraw-request")({
 
           // Reserve units immediately so balance can't be double-spent
           const ratio = currentValue > 0 ? amount / currentValue : 0;
-          const unitsBurned = Number(inv.units_owned ?? 0) * ratio;
+          const unitsBurned = Math.round((Number(inv.units_owned ?? 0) * ratio) * 1_000_000) / 1_000_000;
           await supabaseAdmin
             .from("user_investments")
             .update({
@@ -117,9 +110,4 @@ export const Route = createFileRoute("/api/withdraw-request")({
   },
 });
 
-function json(body: unknown, status = 200) {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: { "Content-Type": "application/json" },
-  });
-}
+

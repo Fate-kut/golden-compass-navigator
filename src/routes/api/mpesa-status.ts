@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { createClient } from "@supabase/supabase-js";
-import type { Database } from "@/integrations/supabase/types";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { authenticateRequest, json } from "@/lib/auth.server";
+import { getMpesaUrls } from "@/lib/mpesa-config.server";
 
 // Query M-Pesa STK Push status for a transaction.
 // Body: { transaction_id: string }
@@ -11,19 +11,9 @@ export const Route = createFileRoute("/api/mpesa-status")({
     handlers: {
       POST: async ({ request }) => {
         try {
-          const auth = request.headers.get("authorization") ?? "";
-          const token = auth.startsWith("Bearer ") ? auth.slice(7) : "";
-          if (!token) return json({ error: "Unauthorized" }, 401);
-
-          const SUPABASE_URL = process.env.SUPABASE_URL!;
-          const SUPABASE_PUBLISHABLE_KEY = process.env.SUPABASE_PUBLISHABLE_KEY!;
-          const userClient = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
-            global: { headers: { Authorization: `Bearer ${token}` } },
-            auth: { persistSession: false, autoRefreshToken: false },
-          });
-          const { data: claims, error: claimsErr } = await userClient.auth.getClaims(token);
-          if (claimsErr || !claims?.claims?.sub) return json({ error: "Unauthorized" }, 401);
-          const userId = claims.claims.sub;
+          const authResult = await authenticateRequest(request);
+          if (authResult instanceof Response) return authResult;
+          const { userId } = authResult;
 
           const body = (await request.json()) as { transaction_id?: string };
           const txId = String(body.transaction_id ?? "");
@@ -56,8 +46,9 @@ export const Route = createFileRoute("/api/mpesa-status")({
           }
 
           // OAuth token
+          const mpesaUrls = getMpesaUrls();
           const tokenRes = await fetch(
-            "https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials",
+            mpesaUrls.oauth,
             { headers: { Authorization: "Basic " + btoa(`${consumerKey}:${consumerSecret}`) } },
           );
           if (!tokenRes.ok) return json({ status: "pending" });
@@ -67,7 +58,7 @@ export const Route = createFileRoute("/api/mpesa-status")({
           const password = btoa(`${shortcode}${passkey}${ts}`);
 
           const queryRes = await fetch(
-            "https://sandbox.safaricom.co.ke/mpesa/stkpushquery/v1/query",
+            mpesaUrls.stkQuery,
             {
               method: "POST",
               headers: {
@@ -122,9 +113,4 @@ export const Route = createFileRoute("/api/mpesa-status")({
   },
 });
 
-function json(body: unknown, status = 200) {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: { "Content-Type": "application/json" },
-  });
-}
+
