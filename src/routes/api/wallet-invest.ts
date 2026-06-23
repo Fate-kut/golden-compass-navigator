@@ -31,7 +31,7 @@ export const Route = createFileRoute("/api/wallet-invest")({
           if (amount < Number(pool.min_investment ?? 0))
             return json({ error: `Minimum investment is KES ${pool.min_investment}` }, 400);
 
-          const { data: new_balance, error: debitError } = await supabaseAdmin.rpc('debit_wallet', { p_user_id: userId, p_amount: amount });
+          const { data: new_balance, error: debitError } = await (supabaseAdmin.rpc as any)('debit_wallet', { p_user_id: userId, p_amount: amount });
           if (debitError) return json({ error: debitError.message }, 400);
 
           // Credit investment

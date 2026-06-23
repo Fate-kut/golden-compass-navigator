@@ -98,14 +98,15 @@ function HistoryPage() {
       ) : (
         <div className="space-y-3">
           {txs.map((tx) => {
-            const isDeposit = tx.type === "deposit";
+            const label = tx.type === "deposit" ? "↓ Deposit" : tx.type === "invest" ? "→ Investment" : "↑ Withdrawal";
+            const isCredit = tx.type === "deposit";
             const color = STATUS_COLOR[tx.status ?? "pending"] ?? "var(--gold-300)";
             return (
               <div key={tx.id} className="glass rounded-xl p-4">
                 <div className="flex items-start justify-between">
                   <div>
                     <p className="t-display t-parch" style={{ fontSize: 14 }}>
-                      {isDeposit ? "↓ Deposit" : "↑ Withdrawal"}
+                      {label}
                       {tx.investment_pools?.name && (
                         <span className="t-sec" style={{ fontSize: 12 }}>
                           {" · "}
@@ -127,10 +128,10 @@ function HistoryPage() {
                       className="t-serif"
                       style={{
                         fontSize: 15,
-                        color: isDeposit ? "var(--gc-success)" : "var(--parchment)",
+                        color: isCredit ? "var(--gc-success)" : tx.type === "invest" ? "var(--gold-300)" : "var(--parchment)",
                       }}
                     >
-                      {isDeposit ? "+" : "−"}
+                      {isCredit ? "+" : "−"}
                       {KES(Number(tx.amount))}
                     </p>
                     <span
