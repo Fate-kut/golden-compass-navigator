@@ -1,3 +1,5 @@
+import { useId } from "react";
+
 interface SparklineProps {
   data: number[];
   width?: number;
@@ -10,6 +12,7 @@ export function Sparkline({ data, width = 280, height = 60, color = "var(--gold-
   const min = Math.min(...data);
   const max = Math.max(...data);
   const range = max - min || 1;
+  const gradientId = useId();
   const stepX = width / (data.length - 1);
 
   const points = data.map((v, i) => {
@@ -24,12 +27,12 @@ export function Sparkline({ data, width = 280, height = 60, color = "var(--gold-
   return (
     <svg width="100%" height={height} viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none">
       <defs>
-        <linearGradient id="spark-fill" x1="0" y1="0" x2="0" y2="1">
+        <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor={color} stopOpacity="0.35" />
           <stop offset="100%" stopColor={color} stopOpacity="0" />
         </linearGradient>
       </defs>
-      <path d={area} fill="url(#spark-fill)" />
+      <path d={area} fill={`url(#${gradientId})`} />
       <path d={path} fill="none" stroke={color} strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round" />
     </svg>
   );

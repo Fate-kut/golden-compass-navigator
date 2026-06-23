@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { createClient } from "@supabase/supabase-js";
-import type { Database } from "@/integrations/supabase/types";
+import { rateLimit } from "@/lib/rate-limit.server";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { authenticateRequest, json } from "@/lib/auth.server";
+import { getMpesaUrls } from "@/lib/mpesa-config.server";
 
 // Initiate an M-Pesa STK Push for a deposit. Authenticated users only.
 // Body: { amount: number, pool_id: string, phone: string }
@@ -10,19 +11,10 @@ export const Route = createFileRoute("/api/mpesa-stk")({
     handlers: {
       POST: async ({ request }) => {
         try {
-          const auth = request.headers.get("authorization") ?? "";
-          const token = auth.startsWith("Bearer ") ? auth.slice(7) : "";
-          if (!token) return json({ error: "Unauthorized" }, 401);
-
-          const SUPABASE_URL = process.env.SUPABASE_URL!;
-          const SUPABASE_PUBLISHABLE_KEY = process.env.SUPABASE_PUBLISHABLE_KEY!;
-          const userClient = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
-            global: { headers: { Authorization: `Bearer ${token}` } },
-            auth: { persistSession: false, autoRefreshToken: false },
-          });
-          const { data: claims, error: claimsErr } = await userClient.auth.getClaims(token);
-          if (claimsErr || !claims?.claims?.sub) return json({ error: "Unauthorized" }, 401);
-          const userId = claims.claims.sub;
+          const authResult = await authenticateRequest(request);
+          if (authResult instanceof Response) return authResult;
+          const { userId } = authResult;
+          if (!rateLimit(userId, 5, 60_000)) return json({ error: "Too many requests" }, 429);
 
           const body = (await request.json()) as { amount?: number; phone?: string };
           const amount = Math.floor(Number(body.amount));
@@ -31,6 +23,7 @@ export const Route = createFileRoute("/api/mpesa-stk")({
           const phoneRaw = String(body.phone ?? "").replace(/\D/g, "");
 
           if (!amount || amount < 1) return json({ error: "Amount must be at least KES 1" }, 400);
+          if (amount > 150_000) return json({ error: "Amount exceeds M-Pesa limit of KES 150,000" }, 400);
           // Normalize phone
           let phone = phoneRaw;
           if (phone.startsWith("0")) phone = "254" + phone.slice(1);
@@ -47,9 +40,10 @@ export const Route = createFileRoute("/api/mpesa-stk")({
             return json({ error: "M-Pesa credentials not configured" }, 500);
           }
 
-          // OAuth token (sandbox)
+          // OAuth token
+          const mpesaUrls = getMpesaUrls();
           const tokenRes = await fetch(
-            "https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials",
+            mpesaUrls.oauth,
             { headers: { Authorization: "Basic " + btoa(`${consumerKey}:${consumerSecret}`) } }
           );
           if (!tokenRes.ok) return json({ error: "M-Pesa auth failed" }, 502);
@@ -89,7 +83,7 @@ export const Route = createFileRoute("/api/mpesa-stk")({
             TransactionDesc: `Wallet top-up`,
           };
 
-          const stkRes = await fetch("https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest", {
+          const stkRes = await fetch(mpesaUrls.stkPush, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -135,9 +129,4 @@ export const Route = createFileRoute("/api/mpesa-stk")({
   },
 });
 
-function json(body: unknown, status = 200) {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: { "Content-Type": "application/json" },
-  });
-}
+

@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { createClient } from "@supabase/supabase-js";
-import type { Database } from "@/integrations/supabase/types";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { authenticateRequest, json } from "@/lib/auth.server";
+import { refundUnits, refundAndFail } from "@/lib/investment-utils.server";
+import { getMpesaUrls } from "@/lib/mpesa-config.server";
 
 // Admin approves a withdrawal → automatically calls M-Pesa B2C to pay out.
 // Body: { transaction_id: string, action: "approve" | "reject" }
@@ -13,29 +14,14 @@ export const Route = createFileRoute("/api/withdraw-approve")({
     handlers: {
       POST: async ({ request }) => {
         try {
-          const auth = request.headers.get("authorization") ?? "";
-          const token = auth.startsWith("Bearer ") ? auth.slice(7) : "";
-          if (!token) return json({ error: "Unauthorized" }, 401);
+          const authResult = await authenticateRequest(request);
+          if (authResult instanceof Response) return authResult;
+          const { userId: adminId } = authResult;
 
-          const userClient = createClient<Database>(
-            process.env.SUPABASE_URL!,
-            process.env.SUPABASE_PUBLISHABLE_KEY!,
-            {
-              global: { headers: { Authorization: `Bearer ${token}` } },
-              auth: { persistSession: false, autoRefreshToken: false },
-            },
-          );
-          const { data: claims, error: cErr } = await userClient.auth.getClaims(token);
-          if (cErr || !claims?.claims?.sub) return json({ error: "Unauthorized" }, 401);
-          const adminId = claims.claims.sub;
+          const { data: adminRole } = await supabaseAdmin.from("user_roles").select("role").eq("user_id", adminId).eq("role", "admin").maybeSingle();
+          if (!adminRole) return json({ error: "Forbidden: admin only" }, 403);
 
-          const { data: roleRow } = await supabaseAdmin
-            .from("user_roles")
-            .select("role")
-            .eq("user_id", adminId)
-            .eq("role", "admin")
-            .maybeSingle();
-          if (!roleRow) return json({ error: "Forbidden" }, 403);
+
 
           const body = (await request.json()) as {
             transaction_id?: string;
@@ -99,8 +85,9 @@ export const Route = createFileRoute("/api/withdraw-approve")({
             .eq("id", txId);
 
           // OAuth token
+          const mpesaUrls = getMpesaUrls();
           const tokRes = await fetch(
-            "https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials",
+            mpesaUrls.oauth,
             { headers: { Authorization: "Basic " + btoa(`${consumerKey}:${consumerSecret}`) } },
           );
           if (!tokRes.ok) {
@@ -124,7 +111,7 @@ export const Route = createFileRoute("/api/withdraw-approve")({
           };
 
           const b2cRes = await fetch(
-            "https://sandbox.safaricom.co.ke/mpesa/b2c/v1/paymentrequest",
+            mpesaUrls.b2c,
             {
               method: "POST",
               headers: {
@@ -175,61 +162,4 @@ export const Route = createFileRoute("/api/withdraw-approve")({
   },
 });
 
-async function refundUnits(tx: {
-  user_id: string;
-  pool_id: string | null;
-  amount: number;
-}) {
-  if (!tx.pool_id) return;
-  const [{ data: pool }, { data: inv }] = await Promise.all([
-    supabaseAdmin
-      .from("investment_pools")
-      .select("current_nav")
-      .eq("id", tx.pool_id)
-      .maybeSingle(),
-    supabaseAdmin
-      .from("user_investments")
-      .select("id, current_value, units_owned, invested_amount")
-      .eq("user_id", tx.user_id)
-      .eq("pool_id", tx.pool_id)
-      .maybeSingle(),
-  ]);
-  const nav = Number(pool?.current_nav ?? 100);
-  const units = Number(tx.amount) / nav;
-  if (inv) {
-    await supabaseAdmin
-      .from("user_investments")
-      .update({
-        current_value: Number(inv.current_value ?? 0) + Number(tx.amount),
-        units_owned: Number(inv.units_owned ?? 0) + units,
-        invested_amount: Number(inv.invested_amount ?? 0) + Number(tx.amount),
-      })
-      .eq("id", inv.id);
-  } else {
-    await supabaseAdmin.from("user_investments").insert({
-      user_id: tx.user_id,
-      pool_id: tx.pool_id,
-      current_value: Number(tx.amount),
-      units_owned: units,
-      invested_amount: Number(tx.amount),
-    });
-  }
-}
 
-async function refundAndFail(
-  tx: { id: string; user_id: string; pool_id: string | null; amount: number },
-  reason: string,
-) {
-  await refundUnits(tx);
-  await supabaseAdmin
-    .from("transactions")
-    .update({ status: "failed", mpesa_reference: `FAIL: ${reason}`.slice(0, 200) })
-    .eq("id", tx.id);
-}
-
-function json(body: unknown, status = 200) {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: { "Content-Type": "application/json" },
-  });
-}

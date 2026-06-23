@@ -1,5 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { json } from "@/lib/auth.server";
+import { verifySafaricomOrigin } from "@/lib/mpesa-security.server";
 
 // Public callback Safaricom POSTs to. No auth header — relies on CheckoutRequestID match.
 // Body shape: { Body: { stkCallback: { ResultCode, CheckoutRequestID, CallbackMetadata? } } }
@@ -8,6 +10,10 @@ export const Route = createFileRoute("/api/mpesa-callback")({
     handlers: {
       POST: async ({ request }) => {
         try {
+          if (!verifySafaricomOrigin(request)) {
+            return new Response("Forbidden", { status: 403 });
+          }
+
           const payload = (await request.json()) as {
             Body?: {
               stkCallback?: {
@@ -93,8 +99,5 @@ export const Route = createFileRoute("/api/mpesa-callback")({
 });
 
 function ack() {
-  return new Response(JSON.stringify({ ResultCode: 0, ResultDesc: "Accepted" }), {
-    status: 200,
-    headers: { "Content-Type": "application/json" },
-  });
+  return json({ ResultCode: 0, ResultDesc: "Accepted" });
 }
