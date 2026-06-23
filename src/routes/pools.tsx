@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -93,6 +93,13 @@ function PoolsPage() {
         <p className="t-serif t-sec mt-2" style={{ fontSize: 13, fontStyle: "italic" }}>
           Choose your vessel. Each charts a different course through the markets.
         </p>
+        <Link
+          to="/guides/dividend-tracking"
+          className="t-mono t-gold inline-block mt-3"
+          style={{ fontSize: 9, letterSpacing: "0.18em" }}
+        >
+          📖 READ: DIVIDEND TRACKING GUIDE →
+        </Link>
       </header>
 
       {loading ? (

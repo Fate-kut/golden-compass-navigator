@@ -8,3 +8,4 @@ Golden Compass lets investors top up a wallet via M-Pesa, allocate funds into cu
 
 - [Sign in](/login): Existing investors sign in to their Golden Compass account.
 - [Sign up](/signup): Create a new Golden Compass investor account.
+- [Dividend tracking guide](/guides/dividend-tracking): How pool distributions are calculated, paid into your wallet, and tracked over time.
