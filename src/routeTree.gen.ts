@@ -20,6 +20,7 @@ import { Route as HomeRouteImport } from './routes/home'
 import { Route as HistoryRouteImport } from './routes/history'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as GuidesDividendTrackingRouteImport } from './routes/guides.dividend-tracking'
 import { Route as ApiWithdrawRequestRouteImport } from './routes/api/withdraw-request'
 import { Route as ApiWithdrawApproveRouteImport } from './routes/api/withdraw-approve'
 import { Route as ApiWalletInvestRouteImport } from './routes/api/wallet-invest'
@@ -83,6 +84,11 @@ const AdminRoute = AdminRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GuidesDividendTrackingRoute = GuidesDividendTrackingRouteImport.update({
+  id: '/guides/dividend-tracking',
+  path: '/guides/dividend-tracking',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiWithdrawRequestRoute = ApiWithdrawRequestRouteImport.update({
@@ -152,6 +158,7 @@ export interface FileRoutesByFullPath {
   '/api/wallet-invest': typeof ApiWalletInvestRoute
   '/api/withdraw-approve': typeof ApiWithdrawApproveRoute
   '/api/withdraw-request': typeof ApiWithdrawRequestRoute
+  '/guides/dividend-tracking': typeof GuidesDividendTrackingRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -174,6 +181,7 @@ export interface FileRoutesByTo {
   '/api/wallet-invest': typeof ApiWalletInvestRoute
   '/api/withdraw-approve': typeof ApiWithdrawApproveRoute
   '/api/withdraw-request': typeof ApiWithdrawRequestRoute
+  '/guides/dividend-tracking': typeof GuidesDividendTrackingRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -197,6 +205,7 @@ export interface FileRoutesById {
   '/api/wallet-invest': typeof ApiWalletInvestRoute
   '/api/withdraw-approve': typeof ApiWithdrawApproveRoute
   '/api/withdraw-request': typeof ApiWithdrawRequestRoute
+  '/guides/dividend-tracking': typeof GuidesDividendTrackingRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -221,6 +230,7 @@ export interface FileRouteTypes {
     | '/api/wallet-invest'
     | '/api/withdraw-approve'
     | '/api/withdraw-request'
+    | '/guides/dividend-tracking'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -243,6 +253,7 @@ export interface FileRouteTypes {
     | '/api/wallet-invest'
     | '/api/withdraw-approve'
     | '/api/withdraw-request'
+    | '/guides/dividend-tracking'
   id:
     | '__root__'
     | '/'
@@ -265,6 +276,7 @@ export interface FileRouteTypes {
     | '/api/wallet-invest'
     | '/api/withdraw-approve'
     | '/api/withdraw-request'
+    | '/guides/dividend-tracking'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -286,6 +298,7 @@ export interface RootRouteChildren {
   ApiWalletInvestRoute: typeof ApiWalletInvestRoute
   ApiWithdrawApproveRoute: typeof ApiWithdrawApproveRoute
   ApiWithdrawRequestRoute: typeof ApiWithdrawRequestRoute
+  GuidesDividendTrackingRoute: typeof GuidesDividendTrackingRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -365,6 +378,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/guides/dividend-tracking': {
+      id: '/guides/dividend-tracking'
+      path: '/guides/dividend-tracking'
+      fullPath: '/guides/dividend-tracking'
+      preLoaderRoute: typeof GuidesDividendTrackingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/withdraw-request': {
@@ -464,16 +484,8 @@ const rootRouteChildren: RootRouteChildren = {
   ApiWalletInvestRoute: ApiWalletInvestRoute,
   ApiWithdrawApproveRoute: ApiWithdrawApproveRoute,
   ApiWithdrawRequestRoute: ApiWithdrawRequestRoute,
+  GuidesDividendTrackingRoute: GuidesDividendTrackingRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}
