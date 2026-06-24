@@ -44,6 +44,13 @@ export const Route = createRootRoute({
       { name: "author", content: "Golden Compass" },
       { property: "og:site_name", content: "Golden Compass" },
       { property: "og:type", content: "website" },
+      { property: "og:title", content: "Golden Compass — Navigate Your Wealth" },
+      { name: "twitter:title", content: "Golden Compass — Navigate Your Wealth" },
+      { property: "og:description", content: "Golden Compass investment platform. Navigate your wealth with AI-powered portfolio management." },
+      { name: "twitter:description", content: "Golden Compass investment platform. Navigate your wealth with AI-powered portfolio management." },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/3768138a-5887-4cec-b4fd-d7616ea55383" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/3768138a-5887-4cec-b4fd-d7616ea55383" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
