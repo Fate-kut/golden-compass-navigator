@@ -198,6 +198,87 @@
   pointer-events: none; z-index: 2;
 }
 
+/* ── Liquid glass + spatial UI (visionOS-inspired, brand-locked) ── */
+.liquid-glass {
+  position: relative;
+  background:
+    linear-gradient(145deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.04) 38%, rgba(201,168,76,0.04) 100%),
+    rgba(7, 12, 22, 0.45);
+  backdrop-filter: blur(32px) saturate(180%) brightness(1.06);
+  -webkit-backdrop-filter: blur(32px) saturate(180%) brightness(1.06);
+  border: 1px solid rgba(255,255,255,0.14);
+  border-top-color: rgba(255,255,255,0.32);
+  border-left-color: rgba(255,255,255,0.18);
+  border-radius: 28px;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.22),
+    inset 0 -1px 0 rgba(0,0,0,0.35),
+    0 30px 60px -20px rgba(0,0,0,0.65),
+    0 12px 24px -8px rgba(0,0,0,0.45);
+  overflow: hidden;
+}
+.liquid-glass::before {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(120% 60% at 0% 0%, rgba(255,255,255,0.18) 0%, transparent 55%),
+    radial-gradient(80% 50% at 100% 100%, rgba(201,168,76,0.10) 0%, transparent 60%);
+  pointer-events: none; border-radius: inherit; z-index: 1;
+}
+.liquid-glass::after {
+  content: '';
+  position: absolute; top: 0; left: 8%; right: 8%; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,220,140,0.55), transparent);
+  pointer-events: none; z-index: 2;
+}
+.liquid-glass > * { position: relative; z-index: 3; }
+
+/* Spatial floating orbs behind the card */
+.spatial-orb {
+  position: absolute; border-radius: 50%;
+  filter: blur(40px);
+  pointer-events: none; z-index: 0;
+  animation: orbDrift 12s ease-in-out infinite;
+}
+.spatial-orb-gold {
+  width: 180px; height: 180px;
+  background: radial-gradient(circle, rgba(201,168,76,0.45), transparent 70%);
+}
+.spatial-orb-teal {
+  width: 160px; height: 160px;
+  background: radial-gradient(circle, rgba(42,191,191,0.35), transparent 70%);
+}
+@keyframes orbDrift {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%      { transform: translate(14px, -10px) scale(1.06); }
+  66%      { transform: translate(-10px, 12px) scale(0.96); }
+}
+
+/* Floating glass chips (spatial depth markers) */
+.glass-chip {
+  position: absolute;
+  background: rgba(255,255,255,0.06);
+  backdrop-filter: blur(18px) saturate(160%);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  border: 1px solid rgba(255,255,255,0.14);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.18), 0 12px 30px rgba(0,0,0,0.45);
+  pointer-events: none;
+  animation: chipFloat 7s ease-in-out infinite;
+}
+@keyframes chipFloat {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50%      { transform: translateY(-8px) rotate(2deg); }
+}
+
+/* Tilt on hover (spatial parallax) */
+.spatial-tilt {
+  transform-style: preserve-3d;
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.spatial-tilt:hover {
+  transform: perspective(900px) rotateX(2deg) rotateY(-3deg) translateZ(6px);
+}
+
 /* ── Brass button ── */
 .btn-brass {
   position: relative; display: inline-flex;
