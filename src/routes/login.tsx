@@ -85,8 +85,22 @@ function LoginPage() {
           </p>
         </div>
 
-        <div className="px-5 anim-fade-up" style={{ animationDelay: "0.65s" }}>
-          <div className="glass glass-shine rounded-2xl p-6 mb-4">
+        <div className="px-5 anim-fade-up relative" style={{ animationDelay: "0.65s" }}>
+          {/* Spatial ambient orbs */}
+          <div className="spatial-orb spatial-orb-gold" style={{ top: -40, left: -30 }} />
+          <div className="spatial-orb spatial-orb-teal" style={{ bottom: 80, right: -40 }} />
+
+          {/* Floating glass chips for spatial depth */}
+          <div
+            className="glass-chip"
+            style={{ top: -18, right: 18, width: 44, height: 44, borderRadius: 14, animationDelay: "0.4s" }}
+          />
+          <div
+            className="glass-chip"
+            style={{ bottom: 110, left: -12, width: 28, height: 28, borderRadius: "50%", animationDelay: "1.2s" }}
+          />
+
+          <div className="liquid-glass spatial-tilt p-6 mb-4">
             <form onSubmit={handleSubmit}>
               <div className="gc-input-wrap mb-4">
                 <label className="gc-input-label">Email Address</label>
@@ -144,10 +158,7 @@ function LoginPage() {
             </form>
           </div>
 
-          <div
-            className="glass rounded-2xl p-4 text-center"
-            style={{ background: "rgba(255,255,255,0.03)" }}
-          >
+          <div className="liquid-glass p-4 text-center" style={{ borderRadius: 22 }}>
             <p className="t-fell t-sec" style={{ fontSize: 13, fontStyle: "italic", marginBottom: 8 }}>
               New to the fleet?
             </p>
