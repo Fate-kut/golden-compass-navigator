@@ -99,14 +99,14 @@ export const Route = createFileRoute("/api/mpesa-stk")({
           };
 
           if (!stkRes.ok || stkData.ResponseCode !== "0") {
+            const reason =
+              stkData.errorMessage || stkData.ResponseDescription || "STK Push failed";
+            console.error("[mpesa-stk] failure", { status: stkRes.status, body: stkData });
             await supabaseAdmin
               .from("transactions")
-              .update({ status: "failed" })
+              .update({ status: "failed", mpesa_reference: `STK: ${reason}`.slice(0, 200) })
               .eq("id", tx.id);
-            return json(
-              { error: stkData.errorMessage || stkData.ResponseDescription || "STK Push failed" },
-              502
-            );
+            return json({ error: reason }, 502);
           }
 
           await supabaseAdmin
