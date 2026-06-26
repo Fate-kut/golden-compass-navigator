@@ -35,9 +35,19 @@ export const Route = createFileRoute("/api/mpesa-stk")({
           const consumerSecret = process.env.MPESA_CONSUMER_SECRET;
           const shortcode = process.env.MPESA_SHORTCODE;
           const passkey = process.env.MPESA_PASSKEY;
-          const callbackUrl = process.env.MPESA_CALLBACK_URL;
+          let callbackUrl = process.env.MPESA_CALLBACK_URL;
           if (!consumerKey || !consumerSecret || !shortcode || !passkey || !callbackUrl) {
             return json({ error: "M-Pesa credentials not configured" }, 500);
+          }
+          // Normalize: ensure scheme + correct path
+          if (!/^https?:\/\//i.test(callbackUrl)) callbackUrl = "https://" + callbackUrl;
+          try {
+            const u = new URL(callbackUrl);
+            // Force the actual handler path regardless of what was configured
+            u.pathname = "/api/mpesa-callback";
+            callbackUrl = u.toString();
+          } catch {
+            return json({ error: "Invalid MPESA_CALLBACK_URL" }, 500);
           }
 
           // OAuth token
