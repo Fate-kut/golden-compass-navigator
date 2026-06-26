@@ -69,16 +69,13 @@ export const Route = createFileRoute("/api/mpesa-callback")({
           // Deposits ALWAYS credit the wallet — never touch user_investments here.
           // Pool investing happens separately via /api/wallet-invest.
           if (tx.type === "deposit") {
-            const { data: prof } = await supabaseAdmin
-              .from("profiles")
-              .select("wallet_balance")
-              .eq("id", tx.user_id)
-              .maybeSingle();
-            const newBal = Number(prof?.wallet_balance ?? 0) + Number(tx.amount);
-            await supabaseAdmin
-              .from("profiles")
-              .update({ wallet_balance: newBal })
-              .eq("id", tx.user_id);
+            const { error: creditErr } = await (supabaseAdmin.rpc as any)("credit_wallet", {
+              p_user_id: tx.user_id,
+              p_amount: Number(tx.amount),
+            });
+            if (creditErr) {
+              console.error("[mpesa-callback] credit_wallet failed", creditErr);
+            }
             await supabaseAdmin.from("notifications").insert({
               user_id: tx.user_id,
               type: "deposit",
