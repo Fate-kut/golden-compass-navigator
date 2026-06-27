@@ -24,6 +24,8 @@ import { Route as GuidesDividendTrackingRouteImport } from './routes/guides.divi
 import { Route as ApiWithdrawRequestRouteImport } from './routes/api/withdraw-request'
 import { Route as ApiWithdrawApproveRouteImport } from './routes/api/withdraw-approve'
 import { Route as ApiWalletInvestRouteImport } from './routes/api/wallet-invest'
+import { Route as ApiTradeRouteImport } from './routes/api/trade'
+import { Route as ApiQuoteRouteImport } from './routes/api/quote'
 import { Route as ApiMpesaStkRouteImport } from './routes/api/mpesa-stk'
 import { Route as ApiMpesaStatusRouteImport } from './routes/api/mpesa-status'
 import { Route as ApiMpesaCallbackRouteImport } from './routes/api/mpesa-callback'
@@ -106,6 +108,16 @@ const ApiWalletInvestRoute = ApiWalletInvestRouteImport.update({
   path: '/api/wallet-invest',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiTradeRoute = ApiTradeRouteImport.update({
+  id: '/api/trade',
+  path: '/api/trade',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiQuoteRoute = ApiQuoteRouteImport.update({
+  id: '/api/quote',
+  path: '/api/quote',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiMpesaStkRoute = ApiMpesaStkRouteImport.update({
   id: '/api/mpesa-stk',
   path: '/api/mpesa-stk',
@@ -155,6 +167,8 @@ export interface FileRoutesByFullPath {
   '/api/mpesa-callback': typeof ApiMpesaCallbackRoute
   '/api/mpesa-status': typeof ApiMpesaStatusRoute
   '/api/mpesa-stk': typeof ApiMpesaStkRoute
+  '/api/quote': typeof ApiQuoteRoute
+  '/api/trade': typeof ApiTradeRoute
   '/api/wallet-invest': typeof ApiWalletInvestRoute
   '/api/withdraw-approve': typeof ApiWithdrawApproveRoute
   '/api/withdraw-request': typeof ApiWithdrawRequestRoute
@@ -178,6 +192,8 @@ export interface FileRoutesByTo {
   '/api/mpesa-callback': typeof ApiMpesaCallbackRoute
   '/api/mpesa-status': typeof ApiMpesaStatusRoute
   '/api/mpesa-stk': typeof ApiMpesaStkRoute
+  '/api/quote': typeof ApiQuoteRoute
+  '/api/trade': typeof ApiTradeRoute
   '/api/wallet-invest': typeof ApiWalletInvestRoute
   '/api/withdraw-approve': typeof ApiWithdrawApproveRoute
   '/api/withdraw-request': typeof ApiWithdrawRequestRoute
@@ -202,6 +218,8 @@ export interface FileRoutesById {
   '/api/mpesa-callback': typeof ApiMpesaCallbackRoute
   '/api/mpesa-status': typeof ApiMpesaStatusRoute
   '/api/mpesa-stk': typeof ApiMpesaStkRoute
+  '/api/quote': typeof ApiQuoteRoute
+  '/api/trade': typeof ApiTradeRoute
   '/api/wallet-invest': typeof ApiWalletInvestRoute
   '/api/withdraw-approve': typeof ApiWithdrawApproveRoute
   '/api/withdraw-request': typeof ApiWithdrawRequestRoute
@@ -227,6 +245,8 @@ export interface FileRouteTypes {
     | '/api/mpesa-callback'
     | '/api/mpesa-status'
     | '/api/mpesa-stk'
+    | '/api/quote'
+    | '/api/trade'
     | '/api/wallet-invest'
     | '/api/withdraw-approve'
     | '/api/withdraw-request'
@@ -250,6 +270,8 @@ export interface FileRouteTypes {
     | '/api/mpesa-callback'
     | '/api/mpesa-status'
     | '/api/mpesa-stk'
+    | '/api/quote'
+    | '/api/trade'
     | '/api/wallet-invest'
     | '/api/withdraw-approve'
     | '/api/withdraw-request'
@@ -273,6 +295,8 @@ export interface FileRouteTypes {
     | '/api/mpesa-callback'
     | '/api/mpesa-status'
     | '/api/mpesa-stk'
+    | '/api/quote'
+    | '/api/trade'
     | '/api/wallet-invest'
     | '/api/withdraw-approve'
     | '/api/withdraw-request'
@@ -295,6 +319,8 @@ export interface RootRouteChildren {
   ApiMpesaCallbackRoute: typeof ApiMpesaCallbackRoute
   ApiMpesaStatusRoute: typeof ApiMpesaStatusRoute
   ApiMpesaStkRoute: typeof ApiMpesaStkRoute
+  ApiQuoteRoute: typeof ApiQuoteRoute
+  ApiTradeRoute: typeof ApiTradeRoute
   ApiWalletInvestRoute: typeof ApiWalletInvestRoute
   ApiWithdrawApproveRoute: typeof ApiWithdrawApproveRoute
   ApiWithdrawRequestRoute: typeof ApiWithdrawRequestRoute
@@ -408,6 +434,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiWalletInvestRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/trade': {
+      id: '/api/trade'
+      path: '/api/trade'
+      fullPath: '/api/trade'
+      preLoaderRoute: typeof ApiTradeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/quote': {
+      id: '/api/quote'
+      path: '/api/quote'
+      fullPath: '/api/quote'
+      preLoaderRoute: typeof ApiQuoteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/mpesa-stk': {
       id: '/api/mpesa-stk'
       path: '/api/mpesa-stk'
@@ -481,6 +521,8 @@ const rootRouteChildren: RootRouteChildren = {
   ApiMpesaCallbackRoute: ApiMpesaCallbackRoute,
   ApiMpesaStatusRoute: ApiMpesaStatusRoute,
   ApiMpesaStkRoute: ApiMpesaStkRoute,
+  ApiQuoteRoute: ApiQuoteRoute,
+  ApiTradeRoute: ApiTradeRoute,
   ApiWalletInvestRoute: ApiWalletInvestRoute,
   ApiWithdrawApproveRoute: ApiWithdrawApproveRoute,
   ApiWithdrawRequestRoute: ApiWithdrawRequestRoute,
@@ -489,12 +531,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}
