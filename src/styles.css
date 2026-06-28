@@ -502,3 +502,334 @@
   font-size: 14px;
   margin: 8px 0 4px;
 }
+
+/* ═══════════════════════════════════════════
+   DESIGN PACK v2 — merged tokens & utilities
+   Layered on top of the existing liquid-glass /
+   spatial / skeuomorphic / glassmorphic system.
+   Use these for new market / portfolio / chart
+   surfaces. Existing tokens above remain canonical.
+═══════════════════════════════════════════ */
+:root {
+  /* Extended ocean palette (deeper navy scale) */
+  --void:    #080C14;
+  --abyss:   #0D1521;
+  --deep:    #111E2E;
+  --surface: #162438;
+  --rim:     #1E3150;
+
+  /* Text scale (cool tinted) */
+  --txt-muted:  #2A4566;
+  --txt-subtle: #4A6A8A;
+  --txt-body:   #8AA8C4;
+  --txt-soft:   #B8D0E8;
+  --txt-bright: #E8F2FA;
+
+  /* Brighter gold accent (for data / market UI) */
+  --gold-dim2:   #7A5C1A;
+  --gold-mid:    #C9922A;
+  --gold-bright: #F0B945;
+  --gold-pale:   #F5CE7A;
+  --gold-glow:   rgba(240,185,69,0.15);
+
+  /* Semantic market colors */
+  --gain:     #2DD882;
+  --gain-dim: rgba(45,216,130,0.12);
+  --loss:     #F04C5A;
+  --loss-dim: rgba(240,76,90,0.12);
+  --neutral:  #5B8BB5;
+  --warn:     #F0A545;
+
+  /* Pack radii / shadows */
+  --r-xs: 4px;
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-xl: 24px;
+  --r-pill: 999px;
+  --shadow-card: 0 4px 24px rgba(0,0,0,0.4), 0 1px 4px rgba(0,0,0,0.3);
+  --shadow-gold: 0 0 20px rgba(240,185,69,0.2);
+  --glow-gold-strong: 0 0 12px rgba(240,185,69,0.35);
+}
+
+/* ── Typography helpers (pack scale, brand fonts) ── */
+.t-pack-display    { font-family: var(--font-display); font-size: 40px; font-weight: 700; color: var(--txt-bright); line-height: 1; }
+.t-pack-title      { font-family: var(--font-display); font-size: 24px; font-weight: 600; color: var(--txt-bright); }
+.t-pack-heading    { font-family: var(--font-serif); font-size: 18px; font-weight: 600; color: var(--txt-bright); }
+.t-pack-sub        { font-family: var(--font-serif); font-size: 15px; font-weight: 500; color: var(--txt-soft); }
+.t-pack-body       { font-family: var(--font-serif); font-size: 14px; color: var(--txt-body); }
+.t-pack-caption    { font-size: 12px; color: var(--txt-subtle); }
+.t-pack-label      { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.12em; color: var(--gold-bright); text-transform: uppercase; }
+.t-pack-mono-lg    { font-family: var(--font-mono); font-size: 28px; font-weight: 500; color: var(--txt-bright); }
+.t-pack-mono-sm    { font-family: var(--font-mono); font-size: 13px; color: var(--txt-body); }
+.t-bright { color: var(--txt-bright); }
+.t-soft   { color: var(--txt-soft); }
+.t-body2  { color: var(--txt-body); }
+.t-subtle { color: var(--txt-subtle); }
+.t-gain   { color: var(--gain); }
+.t-loss   { color: var(--loss); }
+
+/* ── Cards (data surfaces) ── */
+.card-pack {
+  background: var(--deep);
+  border: 1px solid var(--rim);
+  border-radius: var(--r-lg);
+  padding: 20px;
+  box-shadow: var(--shadow-card);
+}
+.card-pack-gold {
+  background: linear-gradient(135deg, var(--deep), var(--surface));
+  border-color: var(--gold-dim2);
+  box-shadow: var(--shadow-card), var(--shadow-gold);
+}
+
+/* ── Stat card ── */
+.stat-card {
+  background: var(--deep);
+  border: 1px solid var(--rim);
+  border-radius: var(--r-lg);
+  padding: 20px;
+}
+.stat-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--txt-subtle);
+  margin-bottom: 8px;
+}
+.stat-value {
+  font-family: var(--font-mono);
+  font-size: 28px;
+  font-weight: 500;
+  color: var(--txt-bright);
+  margin-bottom: 6px;
+}
+.stat-change {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.gain-text    { color: var(--gain); }
+.loss-text    { color: var(--loss); }
+.neutral-text { color: var(--txt-subtle); }
+
+/* ── Market table / row ── */
+.market-table {
+  background: var(--deep);
+  border: 1px solid var(--rim);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+}
+.market-header {
+  display: grid;
+  grid-template-columns: 1fr 100px 100px;
+  padding: 12px 16px;
+  background: var(--surface);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--txt-subtle);
+  border-bottom: 1px solid var(--rim);
+}
+.market-row {
+  display: grid;
+  grid-template-columns: 1fr 100px 100px;
+  padding: 14px 16px;
+  align-items: center;
+  border-bottom: 1px solid var(--rim);
+  transition: background 0.15s ease;
+}
+.market-row:hover { background: var(--surface); }
+.market-row:last-child { border-bottom: none; }
+.market-name { font-size: 14px; font-weight: 500; color: var(--txt-bright); }
+.market-sub  { font-size: 11px; color: var(--txt-subtle); font-family: var(--font-mono); }
+
+/* ── Price pills (buy/sell) ── */
+.price-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px;
+  border-radius: var(--r-sm);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 500;
+  min-width: 78px;
+}
+.sell-pill { background: var(--loss-dim); color: var(--loss); border: 1px solid rgba(240,76,90,0.25); }
+.buy-pill  { background: var(--gain-dim); color: var(--gain); border: 1px solid rgba(45,216,130,0.25); }
+.price-delta {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  margin-top: 2px;
+  text-align: center;
+}
+
+/* ── Asset icons ── */
+.asset-icon {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+.icon-btc { background: linear-gradient(135deg, #F7931A, #FF6B00); color: #fff; }
+.icon-eth { background: linear-gradient(135deg, #627EEA, #8B5CF6); color: #fff; }
+.icon-nse { background: linear-gradient(135deg, var(--gold-dim2), var(--gold-mid)); color: #fff; }
+.icon-generic { background: var(--surface); color: var(--gold-bright); border: 1px solid var(--rim); }
+
+/* ── Badges ── */
+.badge-pack {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: var(--r-pill);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+.badge-gold    { background: rgba(240,185,69,0.15); color: var(--gold-bright); border: 1px solid rgba(240,185,69,0.3); }
+.badge-gain    { background: var(--gain-dim); color: var(--gain); border: 1px solid rgba(45,216,130,0.25); }
+.badge-loss    { background: var(--loss-dim); color: var(--loss); border: 1px solid rgba(240,76,90,0.25); }
+.badge-neutral { background: var(--surface); color: var(--txt-subtle); border: 1px solid var(--rim); }
+
+/* ── Progress bar ── */
+.progress-track {
+  width: 100%;
+  height: 6px;
+  background: var(--surface);
+  border-radius: var(--r-pill);
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold-mid), var(--gold-bright));
+  border-radius: var(--r-pill);
+  box-shadow: 0 0 8px rgba(240,185,69,0.4);
+  transition: width 0.4s ease;
+}
+
+/* ── Tabs ── */
+.tab-group {
+  display: inline-flex;
+  background: var(--deep);
+  border: 1px solid var(--rim);
+  border-radius: var(--r-md);
+  padding: 4px;
+  gap: 2px;
+}
+.tab {
+  padding: 8px 16px;
+  border-radius: var(--r-sm);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--txt-subtle);
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  transition: all 0.15s ease;
+}
+.tab.active {
+  background: var(--surface);
+  color: var(--gold-bright);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
+}
+
+/* ── Timeframe chips (charts) ── */
+.tf {
+  padding: 6px 12px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--txt-subtle);
+  border: 1px solid transparent;
+  border-radius: var(--r-sm);
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.tf.active {
+  color: var(--gold-bright);
+  border-color: var(--gold-dim2);
+  background: var(--gold-glow);
+}
+
+/* ── Chart container ── */
+.chart-area {
+  background: var(--deep);
+  border: 1px solid var(--rim);
+  border-radius: var(--r-lg);
+  padding: 20px;
+}
+.chart-asset       { font-family: var(--font-display); font-size: 18px; color: var(--txt-bright); }
+.chart-price       { font-family: var(--font-mono); font-size: 24px; color: var(--txt-bright); text-align: right; }
+.chart-price-delta { font-family: var(--font-mono); font-size: 12px; text-align: right; }
+
+/* ── Toasts (pack variants — for sonner custom classes) ── */
+.toast-gold { background: var(--gold-glow); border: 1px solid var(--gold-dim2); }
+.toast-gain { background: var(--gain-dim); border: 1px solid rgba(45,216,130,0.25); }
+.toast-loss { background: var(--loss-dim); border: 1px solid rgba(240,76,90,0.25); }
+
+/* ── Pack buttons (flat, data-UI alternative to .btn-brass) ── */
+.btn-pack {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 20px;
+  border-radius: var(--r-sm);
+  font-family: var(--font-serif);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: filter 0.15s ease, transform 0.1s ease;
+}
+.btn-pack:hover { filter: brightness(1.1); }
+.btn-pack:active { transform: translateY(1px); }
+.btn-pack-primary   { background: var(--gold-bright); color: var(--void); }
+.btn-pack-secondary { background: var(--surface); color: var(--txt-bright); border-color: var(--rim); }
+.btn-pack-ghost     { background: transparent; color: var(--txt-soft); border-color: var(--rim); }
+.btn-pack-gain      { background: var(--gain); color: var(--void); }
+.btn-pack-loss      { background: var(--loss); color: #fff; }
+.btn-pack-sm { padding: 7px 16px; font-size: 12px; }
+.btn-pack-lg { padding: 16px 32px; font-size: 16px; }
+
+/* ── Pack inputs (cooler tone than .gc-input) ── */
+.input-pack {
+  width: 100%;
+  background: var(--abyss);
+  border: 1px solid var(--rim);
+  border-radius: var(--r-sm);
+  padding: 12px 14px;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--txt-bright);
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+.input-pack:focus { border-color: var(--gold-dim2); }
+.input-pack::placeholder { color: var(--txt-muted); }
+
+/* Bridge: liquid-glass card on the pack palette */
+.liquid-glass-pack {
+  background:
+    linear-gradient(145deg, rgba(232,242,250,0.06) 0%, rgba(232,242,250,0.02) 45%, rgba(240,185,69,0.04) 100%),
+    rgba(13, 21, 33, 0.55);
+  backdrop-filter: blur(32px) saturate(180%) brightness(1.04);
+  border: 1px solid var(--rim);
+  border-top-color: rgba(232,242,250,0.18);
+  border-radius: var(--r-xl);
+  box-shadow: var(--shadow-card), inset 0 1px 0 rgba(232,242,250,0.10);
+}
+
