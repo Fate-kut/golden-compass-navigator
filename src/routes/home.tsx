@@ -179,18 +179,22 @@ function HomePage() {
             </button>
           </div>
 
-          <div className="mt-3 grid grid-cols-2 gap-3">
-            <Link to="/pools" className="btn-brass" style={{ padding: "12px 16px", fontSize: 11 }}>
+          <div className="mt-3 grid grid-cols-3 gap-2">
+            <Link to="/pools" className="btn-brass" style={{ padding: "12px 10px", fontSize: 11 }}>
               Invest
+            </Link>
+            <Link to="/trade" className="btn-brass" style={{ padding: "12px 10px", fontSize: 11 }}>
+              Trade
             </Link>
             <Link
               to="/history"
               className="glass rounded-[10px] flex items-center justify-center t-gold"
-              style={{ fontFamily: "var(--font-display)", letterSpacing: "0.08em", fontSize: 11, padding: "12px 16px" }}
+              style={{ fontFamily: "var(--font-display)", letterSpacing: "0.08em", fontSize: 11, padding: "12px 10px" }}
             >
               HISTORY
             </Link>
           </div>
+
         </div>
       </TiltCard>
 
