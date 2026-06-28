@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TradeRouteImport } from './routes/trade'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as ProfileRouteImport } from './routes/profile'
@@ -33,6 +34,11 @@ import { Route as ApiMpesaB2cResultRouteImport } from './routes/api/mpesa-b2c-re
 import { Route as AdminTransactionsRouteImport } from './routes/admin.transactions'
 import { Route as AdminKycRouteImport } from './routes/admin.kyc'
 
+const TradeRoute = TradeRouteImport.update({
+  id: '/trade',
+  path: '/trade',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
@@ -161,6 +167,7 @@ export interface FileRoutesByFullPath {
   '/profile': typeof ProfileRoute
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/trade': typeof TradeRoute
   '/admin/kyc': typeof AdminKycRoute
   '/admin/transactions': typeof AdminTransactionsRoute
   '/api/mpesa-b2c-result': typeof ApiMpesaB2cResultRoute
@@ -186,6 +193,7 @@ export interface FileRoutesByTo {
   '/profile': typeof ProfileRoute
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/trade': typeof TradeRoute
   '/admin/kyc': typeof AdminKycRoute
   '/admin/transactions': typeof AdminTransactionsRoute
   '/api/mpesa-b2c-result': typeof ApiMpesaB2cResultRoute
@@ -212,6 +220,7 @@ export interface FileRoutesById {
   '/profile': typeof ProfileRoute
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/trade': typeof TradeRoute
   '/admin/kyc': typeof AdminKycRoute
   '/admin/transactions': typeof AdminTransactionsRoute
   '/api/mpesa-b2c-result': typeof ApiMpesaB2cResultRoute
@@ -239,6 +248,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/signup'
     | '/sitemap.xml'
+    | '/trade'
     | '/admin/kyc'
     | '/admin/transactions'
     | '/api/mpesa-b2c-result'
@@ -264,6 +274,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/signup'
     | '/sitemap.xml'
+    | '/trade'
     | '/admin/kyc'
     | '/admin/transactions'
     | '/api/mpesa-b2c-result'
@@ -289,6 +300,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/signup'
     | '/sitemap.xml'
+    | '/trade'
     | '/admin/kyc'
     | '/admin/transactions'
     | '/api/mpesa-b2c-result'
@@ -315,6 +327,7 @@ export interface RootRouteChildren {
   ProfileRoute: typeof ProfileRoute
   SignupRoute: typeof SignupRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  TradeRoute: typeof TradeRoute
   ApiMpesaB2cResultRoute: typeof ApiMpesaB2cResultRoute
   ApiMpesaCallbackRoute: typeof ApiMpesaCallbackRoute
   ApiMpesaStatusRoute: typeof ApiMpesaStatusRoute
@@ -329,6 +342,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/trade': {
+      id: '/trade'
+      path: '/trade'
+      fullPath: '/trade'
+      preLoaderRoute: typeof TradeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sitemap.xml': {
       id: '/sitemap.xml'
       path: '/sitemap.xml'
@@ -517,6 +537,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProfileRoute: ProfileRoute,
   SignupRoute: SignupRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  TradeRoute: TradeRoute,
   ApiMpesaB2cResultRoute: ApiMpesaB2cResultRoute,
   ApiMpesaCallbackRoute: ApiMpesaCallbackRoute,
   ApiMpesaStatusRoute: ApiMpesaStatusRoute,
@@ -531,12 +552,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}
