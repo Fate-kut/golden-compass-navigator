@@ -15,6 +15,7 @@ import { Route as SignupRouteImport } from './routes/signup'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as PoolsRouteImport } from './routes/pools'
 import { Route as NavigatorRouteImport } from './routes/navigator'
+import { Route as McpRouteImport } from './routes/mcp'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as KycRouteImport } from './routes/kyc'
 import { Route as HomeRouteImport } from './routes/home'
@@ -33,6 +34,9 @@ import { Route as ApiMpesaCallbackRouteImport } from './routes/api/mpesa-callbac
 import { Route as ApiMpesaB2cResultRouteImport } from './routes/api/mpesa-b2c-result'
 import { Route as AdminTransactionsRouteImport } from './routes/admin.transactions'
 import { Route as AdminKycRouteImport } from './routes/admin.kyc'
+import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
+import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
+import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
 
 const TradeRoute = TradeRouteImport.update({
   id: '/trade',
@@ -62,6 +66,11 @@ const PoolsRoute = PoolsRouteImport.update({
 const NavigatorRoute = NavigatorRouteImport.update({
   id: '/navigator',
   path: '/navigator',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const McpRoute = McpRouteImport.update({
+  id: '/mcp',
+  path: '/mcp',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -154,6 +163,24 @@ const AdminKycRoute = AdminKycRouteImport.update({
   path: '/kyc',
   getParentRoute: () => AdminRoute,
 } as any)
+const Char91DotwellKnownChar93OauthProtectedResourceRoute =
+  Char91DotwellKnownChar93OauthProtectedResourceRouteImport.update({
+    id: '/.well-known/oauth-protected-resource',
+    path: '/.well-known/oauth-protected-resource',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const Char91DotmcpChar93ListToolsRoute =
+  Char91DotmcpChar93ListToolsRouteImport.update({
+    id: '/.mcp/list-tools',
+    path: '/.mcp/list-tools',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const Char91DotmcpChar93InvokeToolToolRoute =
+  Char91DotmcpChar93InvokeToolToolRouteImport.update({
+    id: '/.mcp/invoke-tool/$tool',
+    path: '/.mcp/invoke-tool/$tool',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -162,12 +189,15 @@ export interface FileRoutesByFullPath {
   '/home': typeof HomeRoute
   '/kyc': typeof KycRoute
   '/login': typeof LoginRoute
+  '/mcp': typeof McpRoute
   '/navigator': typeof NavigatorRoute
   '/pools': typeof PoolsRoute
   '/profile': typeof ProfileRoute
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/trade': typeof TradeRoute
+  '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/admin/kyc': typeof AdminKycRoute
   '/admin/transactions': typeof AdminTransactionsRoute
   '/api/mpesa-b2c-result': typeof ApiMpesaB2cResultRoute
@@ -180,6 +210,7 @@ export interface FileRoutesByFullPath {
   '/api/withdraw-approve': typeof ApiWithdrawApproveRoute
   '/api/withdraw-request': typeof ApiWithdrawRequestRoute
   '/guides/dividend-tracking': typeof GuidesDividendTrackingRoute
+  '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -188,12 +219,15 @@ export interface FileRoutesByTo {
   '/home': typeof HomeRoute
   '/kyc': typeof KycRoute
   '/login': typeof LoginRoute
+  '/mcp': typeof McpRoute
   '/navigator': typeof NavigatorRoute
   '/pools': typeof PoolsRoute
   '/profile': typeof ProfileRoute
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/trade': typeof TradeRoute
+  '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/admin/kyc': typeof AdminKycRoute
   '/admin/transactions': typeof AdminTransactionsRoute
   '/api/mpesa-b2c-result': typeof ApiMpesaB2cResultRoute
@@ -206,6 +240,7 @@ export interface FileRoutesByTo {
   '/api/withdraw-approve': typeof ApiWithdrawApproveRoute
   '/api/withdraw-request': typeof ApiWithdrawRequestRoute
   '/guides/dividend-tracking': typeof GuidesDividendTrackingRoute
+  '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -215,12 +250,15 @@ export interface FileRoutesById {
   '/home': typeof HomeRoute
   '/kyc': typeof KycRoute
   '/login': typeof LoginRoute
+  '/mcp': typeof McpRoute
   '/navigator': typeof NavigatorRoute
   '/pools': typeof PoolsRoute
   '/profile': typeof ProfileRoute
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/trade': typeof TradeRoute
+  '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
+  '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/admin/kyc': typeof AdminKycRoute
   '/admin/transactions': typeof AdminTransactionsRoute
   '/api/mpesa-b2c-result': typeof ApiMpesaB2cResultRoute
@@ -233,6 +271,7 @@ export interface FileRoutesById {
   '/api/withdraw-approve': typeof ApiWithdrawApproveRoute
   '/api/withdraw-request': typeof ApiWithdrawRequestRoute
   '/guides/dividend-tracking': typeof GuidesDividendTrackingRoute
+  '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -243,12 +282,15 @@ export interface FileRouteTypes {
     | '/home'
     | '/kyc'
     | '/login'
+    | '/mcp'
     | '/navigator'
     | '/pools'
     | '/profile'
     | '/signup'
     | '/sitemap.xml'
     | '/trade'
+    | '/.mcp/list-tools'
+    | '/.well-known/oauth-protected-resource'
     | '/admin/kyc'
     | '/admin/transactions'
     | '/api/mpesa-b2c-result'
@@ -261,6 +303,7 @@ export interface FileRouteTypes {
     | '/api/withdraw-approve'
     | '/api/withdraw-request'
     | '/guides/dividend-tracking'
+    | '/.mcp/invoke-tool/$tool'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -269,12 +312,15 @@ export interface FileRouteTypes {
     | '/home'
     | '/kyc'
     | '/login'
+    | '/mcp'
     | '/navigator'
     | '/pools'
     | '/profile'
     | '/signup'
     | '/sitemap.xml'
     | '/trade'
+    | '/.mcp/list-tools'
+    | '/.well-known/oauth-protected-resource'
     | '/admin/kyc'
     | '/admin/transactions'
     | '/api/mpesa-b2c-result'
@@ -287,6 +333,7 @@ export interface FileRouteTypes {
     | '/api/withdraw-approve'
     | '/api/withdraw-request'
     | '/guides/dividend-tracking'
+    | '/.mcp/invoke-tool/$tool'
   id:
     | '__root__'
     | '/'
@@ -295,12 +342,15 @@ export interface FileRouteTypes {
     | '/home'
     | '/kyc'
     | '/login'
+    | '/mcp'
     | '/navigator'
     | '/pools'
     | '/profile'
     | '/signup'
     | '/sitemap.xml'
     | '/trade'
+    | '/.mcp/list-tools'
+    | '/.well-known/oauth-protected-resource'
     | '/admin/kyc'
     | '/admin/transactions'
     | '/api/mpesa-b2c-result'
@@ -313,6 +363,7 @@ export interface FileRouteTypes {
     | '/api/withdraw-approve'
     | '/api/withdraw-request'
     | '/guides/dividend-tracking'
+    | '/.mcp/invoke-tool/$tool'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -322,12 +373,15 @@ export interface RootRouteChildren {
   HomeRoute: typeof HomeRoute
   KycRoute: typeof KycRoute
   LoginRoute: typeof LoginRoute
+  McpRoute: typeof McpRoute
   NavigatorRoute: typeof NavigatorRoute
   PoolsRoute: typeof PoolsRoute
   ProfileRoute: typeof ProfileRoute
   SignupRoute: typeof SignupRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TradeRoute: typeof TradeRoute
+  Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
+  Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   ApiMpesaB2cResultRoute: typeof ApiMpesaB2cResultRoute
   ApiMpesaCallbackRoute: typeof ApiMpesaCallbackRoute
   ApiMpesaStatusRoute: typeof ApiMpesaStatusRoute
@@ -338,6 +392,7 @@ export interface RootRouteChildren {
   ApiWithdrawApproveRoute: typeof ApiWithdrawApproveRoute
   ApiWithdrawRequestRoute: typeof ApiWithdrawRequestRoute
   GuidesDividendTrackingRoute: typeof GuidesDividendTrackingRoute
+  Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -382,6 +437,13 @@ declare module '@tanstack/react-router' {
       path: '/navigator'
       fullPath: '/navigator'
       preLoaderRoute: typeof NavigatorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mcp': {
+      id: '/mcp'
+      path: '/mcp'
+      fullPath: '/mcp'
+      preLoaderRoute: typeof McpRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -510,6 +572,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminKycRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/.well-known/oauth-protected-resource': {
+      id: '/.well-known/oauth-protected-resource'
+      path: '/.well-known/oauth-protected-resource'
+      fullPath: '/.well-known/oauth-protected-resource'
+      preLoaderRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.mcp/list-tools': {
+      id: '/.mcp/list-tools'
+      path: '/.mcp/list-tools'
+      fullPath: '/.mcp/list-tools'
+      preLoaderRoute: typeof Char91DotmcpChar93ListToolsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/.mcp/invoke-tool/$tool': {
+      id: '/.mcp/invoke-tool/$tool'
+      path: '/.mcp/invoke-tool/$tool'
+      fullPath: '/.mcp/invoke-tool/$tool'
+      preLoaderRoute: typeof Char91DotmcpChar93InvokeToolToolRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -532,12 +615,16 @@ const rootRouteChildren: RootRouteChildren = {
   HomeRoute: HomeRoute,
   KycRoute: KycRoute,
   LoginRoute: LoginRoute,
+  McpRoute: McpRoute,
   NavigatorRoute: NavigatorRoute,
   PoolsRoute: PoolsRoute,
   ProfileRoute: ProfileRoute,
   SignupRoute: SignupRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TradeRoute: TradeRoute,
+  Char91DotmcpChar93ListToolsRoute: Char91DotmcpChar93ListToolsRoute,
+  Char91DotwellKnownChar93OauthProtectedResourceRoute:
+    Char91DotwellKnownChar93OauthProtectedResourceRoute,
   ApiMpesaB2cResultRoute: ApiMpesaB2cResultRoute,
   ApiMpesaCallbackRoute: ApiMpesaCallbackRoute,
   ApiMpesaStatusRoute: ApiMpesaStatusRoute,
@@ -548,7 +635,17 @@ const rootRouteChildren: RootRouteChildren = {
   ApiWithdrawApproveRoute: ApiWithdrawApproveRoute,
   ApiWithdrawRequestRoute: ApiWithdrawRequestRoute,
   GuidesDividendTrackingRoute: GuidesDividendTrackingRoute,
+  Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}
