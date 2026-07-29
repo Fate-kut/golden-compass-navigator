@@ -1,0 +1,116 @@
+{
+  "version": 1,
+  "sdk_version": "0.25.0",
+  "path": "/mcp",
+  "auth": {
+    "type": "oauth",
+    "issuer": "https://jmbemmdnepzjimaglvgi.supabase.co/auth/v1",
+    "accepted_audiences": [
+      "authenticated"
+    ]
+  },
+  "mcp": {
+    "server": {
+      "name": "golden-compass-mcp",
+      "version": "0.1.0",
+      "title": "Golden Compass"
+    },
+    "tools": [
+      {
+        "name": "list_pools",
+        "title": "List investment pools",
+        "description": "List the active Golden Compass investment pools with NAV, minimums and fees.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_portfolio",
+        "title": "Get portfolio",
+        "description": "Get the signed-in investor's wallet balance, holdings and profit/loss summary.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_transactions",
+        "title": "List transactions",
+        "description": "List the signed-in investor's most recent deposits, investments and withdrawals.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50,
+              "default": 10,
+              "description": "How many recent transactions to return."
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_quote",
+        "title": "Get market quote",
+        "description": "Fetch a live market quote for a stock symbol on NSE, NGX, JSE, GSE or global exchanges.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": false,
+          "openWorldHint": true
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "symbol": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Ticker symbol, e.g. SCOM or AAPL."
+            },
+            "exchange": {
+              "type": "string",
+              "enum": [
+                "NSE",
+                "NGX",
+                "JSE",
+                "GSE",
+                "GLOBAL"
+              ],
+              "default": "NSE",
+              "description": "Exchange the symbol trades on."
+            }
+          },
+          "required": [
+            "symbol"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}

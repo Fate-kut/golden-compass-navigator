@@ -11,7 +11,7 @@ export default defineTool({
     if (!ctx.isAuthenticated()) return unauthenticated();
     const { data, error } = await supabaseForUser(ctx)
       .from("investment_pools")
-      .select("id, name, pool_type, current_nav, min_investment, holding_period_days, exit_fee_percent, expected_return_percent")
+      .select("id, name, slug, description, pool_type, current_nav, min_investment, holding_period_days, exit_fee_percent")
       .eq("is_active", true);
     if (error) return failure(error.message);
     return ok(data ?? []);
