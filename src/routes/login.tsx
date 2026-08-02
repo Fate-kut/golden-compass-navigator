@@ -156,7 +156,17 @@ function LoginPage() {
                 )}
               </button>
             </form>
+            <p className="text-center" style={{ marginTop: 14 }}>
+              <Link
+                to="/forgot-password"
+                className="t-mono t-sec"
+                style={{ fontSize: 10, letterSpacing: "0.08em", textDecoration: "underline" }}
+              >
+                Forgot password?
+              </Link>
+            </p>
           </div>
+
 
           <div className="liquid-glass p-4 text-center" style={{ borderRadius: 22 }}>
             <p className="t-fell t-sec" style={{ fontSize: 13, fontStyle: "italic", marginBottom: 8 }}>

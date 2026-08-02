@@ -2,11 +2,13 @@ import { Link, useLocation } from "@tanstack/react-router";
 
 const tabs = [
   { to: "/home", icon: "🏠", label: "Home" },
+  { to: "/portfolio", icon: "🗺️", label: "Portfolio" },
   { to: "/pools", icon: "⚓", label: "Pools" },
   { to: "/navigator", icon: "🧭", label: "Guide" },
   { to: "/history", icon: "📜", label: "History" },
   { to: "/profile", icon: "👤", label: "Profile" },
 ] as const;
+
 
 export function BottomNav() {
   const location = useLocation();
