@@ -214,6 +214,54 @@ export type Database = {
         }
         Relationships: []
       }
+      orders: {
+        Row: {
+          account_id: string | null
+          broker_order_id: string | null
+          created_at: string
+          error_message: string | null
+          exchange: string
+          id: string
+          price: number | null
+          quantity: number
+          side: string
+          status: string
+          symbol: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          account_id?: string | null
+          broker_order_id?: string | null
+          created_at?: string
+          error_message?: string | null
+          exchange?: string
+          id?: string
+          price?: number | null
+          quantity: number
+          side: string
+          status?: string
+          symbol: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          account_id?: string | null
+          broker_order_id?: string | null
+          created_at?: string
+          error_message?: string | null
+          exchange?: string
+          id?: string
+          price?: number | null
+          quantity?: number
+          side?: string
+          status?: string
+          symbol?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       pool_nav_history: {
         Row: {
           admin_notes: string | null
@@ -279,6 +327,45 @@ export type Database = {
           phone?: string | null
           updated_at?: string
           wallet_balance?: number
+        }
+        Relationships: []
+      }
+      stock_holdings: {
+        Row: {
+          avg_price: number
+          created_at: string
+          currency: string
+          exchange: string
+          id: string
+          invested_amount: number
+          quantity: number
+          symbol: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avg_price?: number
+          created_at?: string
+          currency?: string
+          exchange?: string
+          id?: string
+          invested_amount?: number
+          quantity?: number
+          symbol: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avg_price?: number
+          created_at?: string
+          currency?: string
+          exchange?: string
+          id?: string
+          invested_amount?: number
+          quantity?: number
+          symbol?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
