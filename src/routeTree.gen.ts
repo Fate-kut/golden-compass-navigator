@@ -13,7 +13,9 @@ import { Route as TradeRouteImport } from './routes/trade'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as PortfolioRouteImport } from './routes/portfolio'
 import { Route as PoolsRouteImport } from './routes/pools'
+import { Route as OrdersRouteImport } from './routes/orders'
 import { Route as NavigatorRouteImport } from './routes/navigator'
 import { Route as McpRouteImport } from './routes/mcp'
 import { Route as LoginRouteImport } from './routes/login'
@@ -58,9 +60,19 @@ const ProfileRoute = ProfileRouteImport.update({
   path: '/profile',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PortfolioRoute = PortfolioRouteImport.update({
+  id: '/portfolio',
+  path: '/portfolio',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PoolsRoute = PoolsRouteImport.update({
   id: '/pools',
   path: '/pools',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OrdersRoute = OrdersRouteImport.update({
+  id: '/orders',
+  path: '/orders',
   getParentRoute: () => rootRouteImport,
 } as any)
 const NavigatorRoute = NavigatorRouteImport.update({
@@ -191,7 +203,9 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/mcp': typeof McpRoute
   '/navigator': typeof NavigatorRoute
+  '/orders': typeof OrdersRoute
   '/pools': typeof PoolsRoute
+  '/portfolio': typeof PortfolioRoute
   '/profile': typeof ProfileRoute
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -221,7 +235,9 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/mcp': typeof McpRoute
   '/navigator': typeof NavigatorRoute
+  '/orders': typeof OrdersRoute
   '/pools': typeof PoolsRoute
+  '/portfolio': typeof PortfolioRoute
   '/profile': typeof ProfileRoute
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -252,7 +268,9 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/mcp': typeof McpRoute
   '/navigator': typeof NavigatorRoute
+  '/orders': typeof OrdersRoute
   '/pools': typeof PoolsRoute
+  '/portfolio': typeof PortfolioRoute
   '/profile': typeof ProfileRoute
   '/signup': typeof SignupRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -284,7 +302,9 @@ export interface FileRouteTypes {
     | '/login'
     | '/mcp'
     | '/navigator'
+    | '/orders'
     | '/pools'
+    | '/portfolio'
     | '/profile'
     | '/signup'
     | '/sitemap.xml'
@@ -314,7 +334,9 @@ export interface FileRouteTypes {
     | '/login'
     | '/mcp'
     | '/navigator'
+    | '/orders'
     | '/pools'
+    | '/portfolio'
     | '/profile'
     | '/signup'
     | '/sitemap.xml'
@@ -344,7 +366,9 @@ export interface FileRouteTypes {
     | '/login'
     | '/mcp'
     | '/navigator'
+    | '/orders'
     | '/pools'
+    | '/portfolio'
     | '/profile'
     | '/signup'
     | '/sitemap.xml'
@@ -375,7 +399,9 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   McpRoute: typeof McpRoute
   NavigatorRoute: typeof NavigatorRoute
+  OrdersRoute: typeof OrdersRoute
   PoolsRoute: typeof PoolsRoute
+  PortfolioRoute: typeof PortfolioRoute
   ProfileRoute: typeof ProfileRoute
   SignupRoute: typeof SignupRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
@@ -425,11 +451,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProfileRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/portfolio': {
+      id: '/portfolio'
+      path: '/portfolio'
+      fullPath: '/portfolio'
+      preLoaderRoute: typeof PortfolioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/pools': {
       id: '/pools'
       path: '/pools'
       fullPath: '/pools'
       preLoaderRoute: typeof PoolsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/orders': {
+      id: '/orders'
+      path: '/orders'
+      fullPath: '/orders'
+      preLoaderRoute: typeof OrdersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/navigator': {
@@ -617,7 +657,9 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   McpRoute: McpRoute,
   NavigatorRoute: NavigatorRoute,
+  OrdersRoute: OrdersRoute,
   PoolsRoute: PoolsRoute,
+  PortfolioRoute: PortfolioRoute,
   ProfileRoute: ProfileRoute,
   SignupRoute: SignupRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
