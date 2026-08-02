@@ -156,6 +156,26 @@ function ProfilePage() {
               </Link>
             )}
             <Link
+              to="/portfolio"
+              className="flex items-center justify-between px-5 py-4 border-b"
+              style={{ borderColor: "rgba(255,255,255,0.06)", textDecoration: "none" }}
+            >
+              <span className="t-serif t-parch" style={{ fontSize: 14 }}>
+                🗺️ Portfolio
+              </span>
+              <span className="t-gold" style={{ fontSize: 14 }}>›</span>
+            </Link>
+            <Link
+              to="/orders"
+              className="flex items-center justify-between px-5 py-4 border-b"
+              style={{ borderColor: "rgba(255,255,255,0.06)", textDecoration: "none" }}
+            >
+              <span className="t-serif t-parch" style={{ fontSize: 14 }}>
+                🧾 Order History
+              </span>
+              <span className="t-gold" style={{ fontSize: 14 }}>›</span>
+            </Link>
+            <Link
               to="/history"
               className="flex items-center justify-between px-5 py-4 border-b"
               style={{ borderColor: "rgba(255,255,255,0.06)", textDecoration: "none" }}
@@ -165,6 +185,7 @@ function ProfilePage() {
               </span>
               <span className="t-gold" style={{ fontSize: 14 }}>›</span>
             </Link>
+
             {isAdmin && (
               <Link
                 to="/admin"
