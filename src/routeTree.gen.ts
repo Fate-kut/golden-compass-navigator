@@ -24,6 +24,9 @@ import { Route as HomeRouteImport } from './routes/home'
 import { Route as HistoryRouteImport } from './routes/history'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as LegalTermsRouteImport } from './routes/legal.terms'
+import { Route as LegalRiskDisclosureRouteImport } from './routes/legal.risk-disclosure'
+import { Route as LegalPrivacyRouteImport } from './routes/legal.privacy'
 import { Route as GuidesDividendTrackingRouteImport } from './routes/guides.dividend-tracking'
 import { Route as ApiWithdrawRequestRouteImport } from './routes/api/withdraw-request'
 import { Route as ApiWithdrawApproveRouteImport } from './routes/api/withdraw-approve'
@@ -113,6 +116,21 @@ const AdminRoute = AdminRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LegalTermsRoute = LegalTermsRouteImport.update({
+  id: '/legal/terms',
+  path: '/legal/terms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LegalRiskDisclosureRoute = LegalRiskDisclosureRouteImport.update({
+  id: '/legal/risk-disclosure',
+  path: '/legal/risk-disclosure',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LegalPrivacyRoute = LegalPrivacyRouteImport.update({
+  id: '/legal/privacy',
+  path: '/legal/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GuidesDividendTrackingRoute = GuidesDividendTrackingRouteImport.update({
@@ -224,6 +242,9 @@ export interface FileRoutesByFullPath {
   '/api/withdraw-approve': typeof ApiWithdrawApproveRoute
   '/api/withdraw-request': typeof ApiWithdrawRequestRoute
   '/guides/dividend-tracking': typeof GuidesDividendTrackingRoute
+  '/legal/privacy': typeof LegalPrivacyRoute
+  '/legal/risk-disclosure': typeof LegalRiskDisclosureRoute
+  '/legal/terms': typeof LegalTermsRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
 }
 export interface FileRoutesByTo {
@@ -256,6 +277,9 @@ export interface FileRoutesByTo {
   '/api/withdraw-approve': typeof ApiWithdrawApproveRoute
   '/api/withdraw-request': typeof ApiWithdrawRequestRoute
   '/guides/dividend-tracking': typeof GuidesDividendTrackingRoute
+  '/legal/privacy': typeof LegalPrivacyRoute
+  '/legal/risk-disclosure': typeof LegalRiskDisclosureRoute
+  '/legal/terms': typeof LegalTermsRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
 }
 export interface FileRoutesById {
@@ -289,6 +313,9 @@ export interface FileRoutesById {
   '/api/withdraw-approve': typeof ApiWithdrawApproveRoute
   '/api/withdraw-request': typeof ApiWithdrawRequestRoute
   '/guides/dividend-tracking': typeof GuidesDividendTrackingRoute
+  '/legal/privacy': typeof LegalPrivacyRoute
+  '/legal/risk-disclosure': typeof LegalRiskDisclosureRoute
+  '/legal/terms': typeof LegalTermsRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
 }
 export interface FileRouteTypes {
@@ -323,6 +350,9 @@ export interface FileRouteTypes {
     | '/api/withdraw-approve'
     | '/api/withdraw-request'
     | '/guides/dividend-tracking'
+    | '/legal/privacy'
+    | '/legal/risk-disclosure'
+    | '/legal/terms'
     | '/.mcp/invoke-tool/$tool'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -355,6 +385,9 @@ export interface FileRouteTypes {
     | '/api/withdraw-approve'
     | '/api/withdraw-request'
     | '/guides/dividend-tracking'
+    | '/legal/privacy'
+    | '/legal/risk-disclosure'
+    | '/legal/terms'
     | '/.mcp/invoke-tool/$tool'
   id:
     | '__root__'
@@ -387,6 +420,9 @@ export interface FileRouteTypes {
     | '/api/withdraw-approve'
     | '/api/withdraw-request'
     | '/guides/dividend-tracking'
+    | '/legal/privacy'
+    | '/legal/risk-disclosure'
+    | '/legal/terms'
     | '/.mcp/invoke-tool/$tool'
   fileRoutesById: FileRoutesById
 }
@@ -418,6 +454,9 @@ export interface RootRouteChildren {
   ApiWithdrawApproveRoute: typeof ApiWithdrawApproveRoute
   ApiWithdrawRequestRoute: typeof ApiWithdrawRequestRoute
   GuidesDividendTrackingRoute: typeof GuidesDividendTrackingRoute
+  LegalPrivacyRoute: typeof LegalPrivacyRoute
+  LegalRiskDisclosureRoute: typeof LegalRiskDisclosureRoute
+  LegalTermsRoute: typeof LegalTermsRoute
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
 }
 
@@ -526,6 +565,27 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/legal/terms': {
+      id: '/legal/terms'
+      path: '/legal/terms'
+      fullPath: '/legal/terms'
+      preLoaderRoute: typeof LegalTermsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/legal/risk-disclosure': {
+      id: '/legal/risk-disclosure'
+      path: '/legal/risk-disclosure'
+      fullPath: '/legal/risk-disclosure'
+      preLoaderRoute: typeof LegalRiskDisclosureRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/legal/privacy': {
+      id: '/legal/privacy'
+      path: '/legal/privacy'
+      fullPath: '/legal/privacy'
+      preLoaderRoute: typeof LegalPrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/guides/dividend-tracking': {
@@ -677,6 +737,9 @@ const rootRouteChildren: RootRouteChildren = {
   ApiWithdrawApproveRoute: ApiWithdrawApproveRoute,
   ApiWithdrawRequestRoute: ApiWithdrawRequestRoute,
   GuidesDividendTrackingRoute: GuidesDividendTrackingRoute,
+  LegalPrivacyRoute: LegalPrivacyRoute,
+  LegalRiskDisclosureRoute: LegalRiskDisclosureRoute,
+  LegalTermsRoute: LegalTermsRoute,
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
 }
 export const routeTree = rootRouteImport
