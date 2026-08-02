@@ -211,9 +211,34 @@ function ProfilePage() {
             </button>
           </div>
 
+          <div className="glass rounded-2xl overflow-hidden">
+            <p
+              className="t-mono t-muted px-5 pt-4 pb-2"
+              style={{ fontSize: 9, letterSpacing: "0.16em" }}
+            >
+              LEGAL
+            </p>
+            {([
+              ["/legal/terms", "📄 Terms of Service"],
+              ["/legal/privacy", "🔒 Privacy Policy"],
+              ["/legal/risk-disclosure", "⚠️ Risk Disclosure"],
+            ] as const).map(([to, label]) => (
+              <Link
+                key={to}
+                to={to}
+                className="flex items-center justify-between px-5 py-4 border-t"
+                style={{ borderColor: "rgba(255,255,255,0.06)", textDecoration: "none" }}
+              >
+                <span className="t-serif t-parch" style={{ fontSize: 14 }}>{label}</span>
+                <span className="t-gold" style={{ fontSize: 14 }}>›</span>
+              </Link>
+            ))}
+          </div>
+
           <p className="t-mono t-muted text-center" style={{ fontSize: 9, letterSpacing: "0.1em" }}>
             MEMBER SINCE {profile?.created_at ? new Date(profile.created_at).getFullYear() : "—"}
           </p>
+
         </>
       )}
     </div>
