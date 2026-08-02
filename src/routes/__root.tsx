@@ -9,7 +9,7 @@ import { LoadingSplash } from "@/components/LoadingSplash";
 
 import appCss from "../styles.css?url";
 
-const authRoutes = ["/login", "/signup"];
+const authRoutes = ["/login", "/signup", "/forgot-password", "/reset-password"];
 
 function NotFoundComponent() {
   return (

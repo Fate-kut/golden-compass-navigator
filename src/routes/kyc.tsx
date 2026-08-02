@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState, type FormEvent } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -171,7 +171,21 @@ function KycPage() {
           />
           <span className="t-mono t-sec" style={{ fontSize: 10, lineHeight: 1.5 }}>
             I understand investments carry risk and the value of my holdings may fall as well as rise.
+            I have read the{" "}
+            <Link to="/legal/risk-disclosure" className="t-gold" style={{ textDecoration: "underline" }}>
+              Risk Disclosure
+            </Link>
+            ,{" "}
+            <Link to="/legal/terms" className="t-gold" style={{ textDecoration: "underline" }}>
+              Terms
+            </Link>{" "}
+            and{" "}
+            <Link to="/legal/privacy" className="t-gold" style={{ textDecoration: "underline" }}>
+              Privacy Policy
+            </Link>
+            .
           </span>
+
         </label>
 
         {error && (
