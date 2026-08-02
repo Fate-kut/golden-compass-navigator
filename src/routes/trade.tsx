@@ -1,8 +1,9 @@
-import { createFileRoute, Navigate } from "@tanstack/react-router";
+import { createFileRoute, Link, Navigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { OrderList, useOrders } from "@/components/OrderHistory";
 
 export const Route = createFileRoute("/trade")({
   head: () => ({
@@ -39,6 +40,7 @@ function TradePage() {
   const [quote, setQuote] = useState<Quote | null>(null);
   const [quoteLoading, setQuoteLoading] = useState(false);
   const [placing, setPlacing] = useState<"buy" | "sell" | null>(null);
+  const { orders, loading: ordersLoading, refresh: refreshOrders } = useOrders(user?.id);
 
   if (authLoading) return null;
   if (!user) return <Navigate to="/login" />;
@@ -83,13 +85,15 @@ function TradePage() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ symbol: sym, side, quantity: qty, account_id: acct }),
+        body: JSON.stringify({ symbol: sym, side, quantity: qty, account_id: acct, exchange }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data?.error ?? "Order failed");
       toast.success(`${side === "buy" ? "Buy" : "Sell"} order placed for ${qty} ${sym}`);
+      await refreshOrders();
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Order failed");
+      await refreshOrders();
     } finally {
       setPlacing(null);
     }
@@ -272,6 +276,22 @@ function TradePage() {
             </button>
           </div>
         </div>
+
+        <section className="flex flex-col gap-2" style={{ marginTop: 8 }}>
+          <div className="flex items-baseline justify-between">
+            <h2 className="t-mono t-sec" style={{ fontSize: 9, letterSpacing: "0.18em" }}>
+              RECENT ORDERS
+            </h2>
+            <Link to="/orders" className="t-mono t-sec" style={{ fontSize: 9, textDecoration: "underline" }}>
+              View all →
+            </Link>
+          </div>
+          {ordersLoading ? (
+            <div className="skeleton h-20 w-full rounded-2xl" />
+          ) : (
+            <OrderList orders={orders.slice(0, 5)} />
+          )}
+        </section>
       </div>
     </div>
   );
