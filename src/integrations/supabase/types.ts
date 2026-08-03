@@ -18,8 +18,13 @@ export type Database = {
         Row: {
           amount: number | null
           created_at: string | null
+          details: Json
           flag_reason: string | null
           id: string
+          review_notes: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          severity: string
           status: string | null
           transaction_id: string | null
           user_id: string | null
@@ -27,8 +32,13 @@ export type Database = {
         Insert: {
           amount?: number | null
           created_at?: string | null
+          details?: Json
           flag_reason?: string | null
           id?: string
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          severity?: string
           status?: string | null
           transaction_id?: string | null
           user_id?: string | null
@@ -36,8 +46,13 @@ export type Database = {
         Update: {
           amount?: number | null
           created_at?: string | null
+          details?: Json
           flag_reason?: string | null
           id?: string
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          severity?: string
           status?: string | null
           transaction_id?: string | null
           user_id?: string | null
@@ -51,6 +66,27 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      app_config: {
+        Row: {
+          description: string | null
+          key: string
+          updated_at: string
+          value: Json
+        }
+        Insert: {
+          description?: string | null
+          key: string
+          updated_at?: string
+          value: Json
+        }
+        Update: {
+          description?: string | null
+          key?: string
+          updated_at?: string
+          value?: Json
+        }
+        Relationships: []
       }
       audit_logs: {
         Row: {
@@ -82,6 +118,45 @@ export type Database = {
           id?: string
           ip_address?: string | null
           metadata?: Json | null
+        }
+        Relationships: []
+      }
+      fee_config: {
+        Row: {
+          commission_percent: number
+          created_at: string
+          currency: string
+          id: string
+          is_active: boolean
+          label: string
+          market: string
+          min_commission: number
+          tax_percent: number
+          updated_at: string
+        }
+        Insert: {
+          commission_percent?: number
+          created_at?: string
+          currency?: string
+          id?: string
+          is_active?: boolean
+          label?: string
+          market: string
+          min_commission?: number
+          tax_percent?: number
+          updated_at?: string
+        }
+        Update: {
+          commission_percent?: number
+          created_at?: string
+          currency?: string
+          id?: string
+          is_active?: boolean
+          label?: string
+          market?: string
+          min_commission?: number
+          tax_percent?: number
+          updated_at?: string
         }
         Relationships: []
       }
@@ -137,8 +212,10 @@ export type Database = {
         Row: {
           address: string | null
           annual_income_range: string | null
+          country: string
           created_at: string | null
           date_of_birth: string | null
+          document_type: string
           employment_status: string | null
           id: string
           national_id: string | null
@@ -152,8 +229,10 @@ export type Database = {
         Insert: {
           address?: string | null
           annual_income_range?: string | null
+          country?: string
           created_at?: string | null
           date_of_birth?: string | null
+          document_type?: string
           employment_status?: string | null
           id?: string
           national_id?: string | null
@@ -167,8 +246,10 @@ export type Database = {
         Update: {
           address?: string | null
           annual_income_range?: string | null
+          country?: string
           created_at?: string | null
           date_of_birth?: string | null
+          document_type?: string
           employment_status?: string | null
           id?: string
           national_id?: string | null
@@ -178,6 +259,72 @@ export type Database = {
           source_of_funds?: string | null
           status?: string | null
           user_id?: string
+        }
+        Relationships: []
+      }
+      legal_acceptances: {
+        Row: {
+          accepted_at: string
+          context: string
+          created_at: string
+          document_slug: string
+          id: string
+          user_id: string
+          version: string
+        }
+        Insert: {
+          accepted_at?: string
+          context?: string
+          created_at?: string
+          document_slug: string
+          id?: string
+          user_id: string
+          version: string
+        }
+        Update: {
+          accepted_at?: string
+          context?: string
+          created_at?: string
+          document_slug?: string
+          id?: string
+          user_id?: string
+          version?: string
+        }
+        Relationships: []
+      }
+      legal_documents: {
+        Row: {
+          created_at: string
+          id: string
+          is_draft: boolean
+          published_at: string | null
+          slug: string
+          summary: string | null
+          title: string
+          updated_at: string
+          version: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_draft?: boolean
+          published_at?: string | null
+          slug: string
+          summary?: string | null
+          title: string
+          updated_at?: string
+          version: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_draft?: boolean
+          published_at?: string | null
+          slug?: string
+          summary?: string | null
+          title?: string
+          updated_at?: string
+          version?: string
         }
         Relationships: []
       }
@@ -218,45 +365,60 @@ export type Database = {
         Row: {
           account_id: string | null
           broker_order_id: string | null
+          commission: number
           created_at: string
+          currency: string
           error_message: string | null
           exchange: string
+          filled_at: string | null
           id: string
+          is_simulated: boolean
           price: number | null
           quantity: number
           side: string
           status: string
           symbol: string
+          tax_withheld: number
           updated_at: string
           user_id: string
         }
         Insert: {
           account_id?: string | null
           broker_order_id?: string | null
+          commission?: number
           created_at?: string
+          currency?: string
           error_message?: string | null
           exchange?: string
+          filled_at?: string | null
           id?: string
+          is_simulated?: boolean
           price?: number | null
           quantity: number
           side: string
           status?: string
           symbol: string
+          tax_withheld?: number
           updated_at?: string
           user_id: string
         }
         Update: {
           account_id?: string | null
           broker_order_id?: string | null
+          commission?: number
           created_at?: string
+          currency?: string
           error_message?: string | null
           exchange?: string
+          filled_at?: string | null
           id?: string
+          is_simulated?: boolean
           price?: number | null
           quantity?: number
           side?: string
           status?: string
           symbol?: string
+          tax_withheld?: number
           updated_at?: string
           user_id?: string
         }
@@ -297,6 +459,8 @@ export type Database = {
       profiles: {
         Row: {
           created_at: string
+          currency: string
+          enabled_markets: Json
           full_name: string
           id: string
           is_active: boolean | null
@@ -308,6 +472,8 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          currency?: string
+          enabled_markets?: Json
           full_name?: string
           id: string
           is_active?: boolean | null
@@ -319,6 +485,8 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          currency?: string
+          enabled_markets?: Json
           full_name?: string
           id?: string
           is_active?: boolean | null
@@ -369,11 +537,63 @@ export type Database = {
         }
         Relationships: []
       }
+      transaction_limits: {
+        Row: {
+          created_at: string
+          currency: string
+          daily_deposit_max: number
+          daily_invest_max: number
+          daily_withdrawal_max: number
+          id: string
+          is_active: boolean
+          monthly_deposit_max: number
+          monthly_withdrawal_max: number
+          notes: string | null
+          single_txn_max: number
+          tier: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          currency?: string
+          daily_deposit_max?: number
+          daily_invest_max?: number
+          daily_withdrawal_max?: number
+          id?: string
+          is_active?: boolean
+          monthly_deposit_max?: number
+          monthly_withdrawal_max?: number
+          notes?: string | null
+          single_txn_max?: number
+          tier?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          currency?: string
+          daily_deposit_max?: number
+          daily_invest_max?: number
+          daily_withdrawal_max?: number
+          id?: string
+          is_active?: boolean
+          monthly_deposit_max?: number
+          monthly_withdrawal_max?: number
+          notes?: string | null
+          single_txn_max?: number
+          tier?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       transactions: {
         Row: {
           amount: number
           confirmed_at: string | null
           created_at: string | null
+          currency: string
           id: string
           mpesa_checkout_id: string | null
           mpesa_reference: string | null
@@ -387,6 +607,7 @@ export type Database = {
           amount: number
           confirmed_at?: string | null
           created_at?: string | null
+          currency?: string
           id?: string
           mpesa_checkout_id?: string | null
           mpesa_reference?: string | null
@@ -400,6 +621,7 @@ export type Database = {
           amount?: number
           confirmed_at?: string | null
           created_at?: string | null
+          currency?: string
           id?: string
           mpesa_checkout_id?: string | null
           mpesa_reference?: string | null
@@ -422,6 +644,7 @@ export type Database = {
       user_investments: {
         Row: {
           created_at: string | null
+          currency: string
           current_value: number | null
           id: string
           invested_amount: number | null
@@ -432,6 +655,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string | null
+          currency?: string
           current_value?: number | null
           id?: string
           invested_amount?: number | null
@@ -442,6 +666,7 @@ export type Database = {
         }
         Update: {
           created_at?: string | null
+          currency?: string
           current_value?: number | null
           id?: string
           invested_amount?: number | null
