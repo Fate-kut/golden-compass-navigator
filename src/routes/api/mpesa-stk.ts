@@ -3,6 +3,8 @@ import { rateLimit } from "@/lib/rate-limit.server";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { authenticateRequest, json } from "@/lib/auth.server";
 import { getMpesaUrls } from "@/lib/mpesa-config.server";
+import { checkTransactionLimit } from "@/lib/limits.server";
+import { screenTransaction } from "@/lib/aml.server";
 
 // Initiate an M-Pesa STK Push for a deposit. Authenticated users only.
 // Body: { amount: number, pool_id: string, phone: string }
@@ -29,6 +31,10 @@ export const Route = createFileRoute("/api/mpesa-stk")({
           if (phone.startsWith("0")) phone = "254" + phone.slice(1);
           else if (phone.startsWith("7") || phone.startsWith("1")) phone = "254" + phone;
           if (!/^254(7|1)\d{8}$/.test(phone)) return json({ error: "Invalid Kenyan phone number" }, 400);
+
+          // Compliance caps (placeholder thresholds — TBD).
+          const limit = await checkTransactionLimit(userId, "deposit", amount);
+          if (!limit.ok) return json({ error: limit.error }, 400);
 
           // Daraja credentials
           const consumerKey = process.env.MPESA_CONSUMER_KEY;
