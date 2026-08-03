@@ -96,7 +96,7 @@ export interface PlacedOrder {
 export async function placeOrder(input: PlaceOrderInput): Promise<PlacedOrder> {
   if ((await getBrokerMode()) === "mock") {
     // MOCK: replace with real broker integration once licensed.
-    return mockPlaceOrder({ ...input, exchange: input.exchange ?? "NSE" });
+    return (await mockPlaceOrder({ ...input, exchange: input.exchange ?? "NSE" })) as unknown as PlacedOrder;
   }
 
   const key = process.env.MYSTOCKS_API_KEY;
