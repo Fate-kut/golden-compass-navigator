@@ -2,6 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { rateLimit } from "@/lib/rate-limit.server";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { authenticateRequest, json } from "@/lib/auth.server";
+import { requireFreshAal2 } from "@/lib/mfa.server";
+import { checkTransactionLimit } from "@/lib/limits.server";
+import { screenTransaction } from "@/lib/aml.server";
 
 // Move funds from user wallet into a pool. Body: { pool_id, amount }
 export const Route = createFileRoute("/api/wallet-invest")({
@@ -11,8 +14,11 @@ export const Route = createFileRoute("/api/wallet-invest")({
         try {
           const authResult = await authenticateRequest(request);
           if (authResult instanceof Response) return authResult;
-          const { userId } = authResult;
+          const { userId, claims } = authResult;
           if (!rateLimit(userId, 10, 60_000)) return json({ error: "Too many requests" }, 429);
+
+          const mfaBlock = await requireFreshAal2(userId, claims);
+          if (mfaBlock) return mfaBlock;
 
           const body = (await request.json()) as { pool_id?: string; amount?: number };
           const pool_id = String(body.pool_id ?? "");
@@ -21,6 +27,10 @@ export const Route = createFileRoute("/api/wallet-invest")({
           if (amount > 10_000_000) return json({ error: "Amount exceeds maximum limit of KES 10,000,000" }, 400);
           if (!pool_id) return json({ error: "pool_id required" }, 400);
           if (!amount || amount < 1) return json({ error: "Amount must be at least KES 1" }, 400);
+
+          // Compliance caps (placeholder thresholds — TBD).
+          const limit = await checkTransactionLimit(userId, "invest", amount);
+          if (!limit.ok) return json({ error: limit.error }, 400);
 
           const { data: pool } = await supabaseAdmin
             .from("investment_pools")
@@ -63,14 +73,16 @@ export const Route = createFileRoute("/api/wallet-invest")({
           }
 
           // Record transaction (already-confirmed wallet transfer)
-          await supabaseAdmin.from("transactions").insert({
+          const { data: tx } = await supabaseAdmin.from("transactions").insert({
             user_id: userId,
             pool_id,
             amount,
             type: "invest",
             status: "confirmed",
             confirmed_at: new Date().toISOString(),
-          });
+          }).select("id").maybeSingle();
+
+          await screenTransaction({ userId, transactionId: tx?.id ?? null, amount, kind: "invest" });
 
           return json({ success: true, new_balance });
         } catch (e) {
@@ -80,5 +92,3 @@ export const Route = createFileRoute("/api/wallet-invest")({
     },
   },
 });
-
-

@@ -12,6 +12,11 @@ export interface RecordOrderInput {
   accountId: string | null;
   brokerOrderId?: string | null;
   errorMessage?: string | null;
+  commission?: number;
+  taxWithheld?: number;
+  currency?: string;
+  /** MOCK: true while the simulated broker is in use. */
+  isSimulated?: boolean;
 }
 
 export async function recordOrder(input: RecordOrderInput) {
@@ -28,6 +33,11 @@ export async function recordOrder(input: RecordOrderInput) {
       account_id: input.accountId,
       broker_order_id: input.brokerOrderId ?? null,
       error_message: input.errorMessage ?? null,
+      commission: input.commission ?? 0,
+      tax_withheld: input.taxWithheld ?? 0,
+      currency: input.currency ?? "KES",
+      is_simulated: input.isSimulated ?? true,
+      filled_at: input.status === "filled" ? new Date().toISOString() : null,
     })
     .select("id")
     .maybeSingle();
