@@ -1,7 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { authenticateRequest, json } from "@/lib/auth.server";
 import { rateLimit } from "@/lib/rate-limit.server";
-import { placeOrder, getQuote } from "@/lib/market.server";
+import { requireFreshAal2 } from "@/lib/mfa.server";
+import { placeOrder, getQuote, isSimulatedTrading } from "@/lib/market.server";
+import { estimateFees } from "@/lib/fees.server";
 
 export const Route = createFileRoute("/api/trade")({
   server: {
@@ -9,8 +11,12 @@ export const Route = createFileRoute("/api/trade")({
       POST: async ({ request }) => {
         const authResult = await authenticateRequest(request);
         if (authResult instanceof Response) return authResult;
-        const { userId } = authResult;
+        const { userId, claims } = authResult;
         if (!rateLimit(userId, 10, 60_000)) return json({ error: "Too many requests" }, 429);
+
+        // Step-up auth for MFA-enrolled users (opt-in; no-op otherwise).
+        const mfaBlock = await requireFreshAal2(userId, claims);
+        if (mfaBlock) return mfaBlock;
 
         const body = (await request.json()) as {
           symbol?: string;
@@ -30,6 +36,7 @@ export const Route = createFileRoute("/api/trade")({
         if (!accountId) return json({ error: "account_id required" }, 400);
 
         const { recordOrder, applyFillToHolding } = await import("@/lib/orders.server");
+        const simulated = await isSimulatedTrading();
 
         // Best-effort reference price for the order record / cost basis.
         let price: number | null = null;
@@ -42,13 +49,25 @@ export const Route = createFileRoute("/api/trade")({
           /* price stays null; order still recorded */
         }
 
+        // MOCK: illustrative commission/tax — TBD pending broker agreement.
+        let commission = 0;
+        let taxWithheld = 0;
+        if (price !== null) {
+          try {
+            const fees = await estimateFees({ market: exchange, side, quantity, price });
+            commission = fees.commission;
+            taxWithheld = fees.tax_withheld;
+            currency = fees.currency as typeof currency;
+          } catch {
+            /* fees stay zero */
+          }
+        }
+
         try {
-          const result = await placeOrder({ symbol, side, quantity, accountId });
+          const result = await placeOrder({ symbol, side, quantity, accountId, exchange });
           const brokerOrderId =
-            (result as { id?: string; order_id?: string })?.id ??
-            (result as { order_id?: string })?.order_id ??
-            null;
-          const brokerStatus = String((result as { status?: string })?.status ?? "filled");
+            (result?.id as string | undefined) ?? (result?.order_id as string | undefined) ?? null;
+          const brokerStatus = String(result?.status ?? "filled");
           const status = brokerStatus === "pending" ? "pending" : "filled";
 
           await recordOrder({
@@ -61,6 +80,10 @@ export const Route = createFileRoute("/api/trade")({
             status,
             accountId,
             brokerOrderId,
+            commission: status === "filled" ? commission : 0,
+            taxWithheld: status === "filled" ? taxWithheld : 0,
+            currency,
+            isSimulated: simulated,
           });
 
           if (status === "filled" && price !== null) {
@@ -75,7 +98,7 @@ export const Route = createFileRoute("/api/trade")({
             });
           }
 
-          return json({ success: true, order: result });
+          return json({ success: true, simulated, order: result, fees: { commission, tax_withheld: taxWithheld } });
         } catch (e) {
           const message = e instanceof Error ? e.message : "Order failed";
           await recordOrder({
@@ -88,8 +111,10 @@ export const Route = createFileRoute("/api/trade")({
             status: "failed",
             accountId,
             errorMessage: message,
+            currency,
+            isSimulated: simulated,
           });
-          return json({ error: message }, 502);
+          return json({ error: message, simulated }, 502);
         }
       },
     },
