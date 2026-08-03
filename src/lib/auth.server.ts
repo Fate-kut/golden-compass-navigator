@@ -1,7 +1,13 @@
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
 
-export async function authenticateRequest(request: Request): Promise<{ userId: string; token: string } | Response> {
+export interface AuthedRequest {
+  userId: string;
+  token: string;
+  claims: Record<string, unknown>;
+}
+
+export async function authenticateRequest(request: Request): Promise<AuthedRequest | Response> {
   const auth = request.headers.get("authorization") ?? "";
   const token = auth.startsWith("Bearer ") ? auth.slice(7) : "";
   if (!token) return json({ error: "Unauthorized" }, 401);
@@ -13,7 +19,11 @@ export async function authenticateRequest(request: Request): Promise<{ userId: s
   });
   const { data: claims, error: claimsErr } = await userClient.auth.getClaims(token);
   if (claimsErr || !claims?.claims?.sub) return json({ error: "Unauthorized" }, 401);
-  return { userId: claims.claims.sub as string, token };
+  return {
+    userId: claims.claims.sub as string,
+    token,
+    claims: claims.claims as unknown as Record<string, unknown>,
+  };
 }
 
 export function json(body: unknown, status = 200) {

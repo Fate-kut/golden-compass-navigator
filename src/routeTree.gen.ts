@@ -39,10 +39,12 @@ import { Route as ApiMpesaStkRouteImport } from './routes/api/mpesa-stk'
 import { Route as ApiMpesaStatusRouteImport } from './routes/api/mpesa-status'
 import { Route as ApiMpesaCallbackRouteImport } from './routes/api/mpesa-callback'
 import { Route as ApiMpesaB2cResultRouteImport } from './routes/api/mpesa-b2c-result'
+import { Route as ApiFeesRouteImport } from './routes/api/fees'
 import { Route as AdminTransactionsRouteImport } from './routes/admin.transactions'
 import { Route as AdminKycRouteImport } from './routes/admin.kyc'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
+import { Route as ApiPublicAmlScanRouteImport } from './routes/api/public/aml-scan'
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
 
 const TradeRoute = TradeRouteImport.update({
@@ -195,6 +197,11 @@ const ApiMpesaB2cResultRoute = ApiMpesaB2cResultRouteImport.update({
   path: '/api/mpesa-b2c-result',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiFeesRoute = ApiFeesRouteImport.update({
+  id: '/api/fees',
+  path: '/api/fees',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminTransactionsRoute = AdminTransactionsRouteImport.update({
   id: '/transactions',
   path: '/transactions',
@@ -217,6 +224,11 @@ const Char91DotmcpChar93ListToolsRoute =
     path: '/.mcp/list-tools',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicAmlScanRoute = ApiPublicAmlScanRouteImport.update({
+  id: '/api/public/aml-scan',
+  path: '/api/public/aml-scan',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const Char91DotmcpChar93InvokeToolToolRoute =
   Char91DotmcpChar93InvokeToolToolRouteImport.update({
     id: '/.mcp/invoke-tool/$tool',
@@ -246,6 +258,7 @@ export interface FileRoutesByFullPath {
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/admin/kyc': typeof AdminKycRoute
   '/admin/transactions': typeof AdminTransactionsRoute
+  '/api/fees': typeof ApiFeesRoute
   '/api/mpesa-b2c-result': typeof ApiMpesaB2cResultRoute
   '/api/mpesa-callback': typeof ApiMpesaCallbackRoute
   '/api/mpesa-status': typeof ApiMpesaStatusRoute
@@ -260,6 +273,7 @@ export interface FileRoutesByFullPath {
   '/legal/risk-disclosure': typeof LegalRiskDisclosureRoute
   '/legal/terms': typeof LegalTermsRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/api/public/aml-scan': typeof ApiPublicAmlScanRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -283,6 +297,7 @@ export interface FileRoutesByTo {
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/admin/kyc': typeof AdminKycRoute
   '/admin/transactions': typeof AdminTransactionsRoute
+  '/api/fees': typeof ApiFeesRoute
   '/api/mpesa-b2c-result': typeof ApiMpesaB2cResultRoute
   '/api/mpesa-callback': typeof ApiMpesaCallbackRoute
   '/api/mpesa-status': typeof ApiMpesaStatusRoute
@@ -297,6 +312,7 @@ export interface FileRoutesByTo {
   '/legal/risk-disclosure': typeof LegalRiskDisclosureRoute
   '/legal/terms': typeof LegalTermsRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/api/public/aml-scan': typeof ApiPublicAmlScanRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -321,6 +337,7 @@ export interface FileRoutesById {
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/admin/kyc': typeof AdminKycRoute
   '/admin/transactions': typeof AdminTransactionsRoute
+  '/api/fees': typeof ApiFeesRoute
   '/api/mpesa-b2c-result': typeof ApiMpesaB2cResultRoute
   '/api/mpesa-callback': typeof ApiMpesaCallbackRoute
   '/api/mpesa-status': typeof ApiMpesaStatusRoute
@@ -335,6 +352,7 @@ export interface FileRoutesById {
   '/legal/risk-disclosure': typeof LegalRiskDisclosureRoute
   '/legal/terms': typeof LegalTermsRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/api/public/aml-scan': typeof ApiPublicAmlScanRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -360,6 +378,7 @@ export interface FileRouteTypes {
     | '/.well-known/oauth-protected-resource'
     | '/admin/kyc'
     | '/admin/transactions'
+    | '/api/fees'
     | '/api/mpesa-b2c-result'
     | '/api/mpesa-callback'
     | '/api/mpesa-status'
@@ -374,6 +393,7 @@ export interface FileRouteTypes {
     | '/legal/risk-disclosure'
     | '/legal/terms'
     | '/.mcp/invoke-tool/$tool'
+    | '/api/public/aml-scan'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -397,6 +417,7 @@ export interface FileRouteTypes {
     | '/.well-known/oauth-protected-resource'
     | '/admin/kyc'
     | '/admin/transactions'
+    | '/api/fees'
     | '/api/mpesa-b2c-result'
     | '/api/mpesa-callback'
     | '/api/mpesa-status'
@@ -411,6 +432,7 @@ export interface FileRouteTypes {
     | '/legal/risk-disclosure'
     | '/legal/terms'
     | '/.mcp/invoke-tool/$tool'
+    | '/api/public/aml-scan'
   id:
     | '__root__'
     | '/'
@@ -434,6 +456,7 @@ export interface FileRouteTypes {
     | '/.well-known/oauth-protected-resource'
     | '/admin/kyc'
     | '/admin/transactions'
+    | '/api/fees'
     | '/api/mpesa-b2c-result'
     | '/api/mpesa-callback'
     | '/api/mpesa-status'
@@ -448,6 +471,7 @@ export interface FileRouteTypes {
     | '/legal/risk-disclosure'
     | '/legal/terms'
     | '/.mcp/invoke-tool/$tool'
+    | '/api/public/aml-scan'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -470,6 +494,7 @@ export interface RootRouteChildren {
   TradeRoute: typeof TradeRoute
   Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  ApiFeesRoute: typeof ApiFeesRoute
   ApiMpesaB2cResultRoute: typeof ApiMpesaB2cResultRoute
   ApiMpesaCallbackRoute: typeof ApiMpesaCallbackRoute
   ApiMpesaStatusRoute: typeof ApiMpesaStatusRoute
@@ -484,6 +509,7 @@ export interface RootRouteChildren {
   LegalRiskDisclosureRoute: typeof LegalRiskDisclosureRoute
   LegalTermsRoute: typeof LegalTermsRoute
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
+  ApiPublicAmlScanRoute: typeof ApiPublicAmlScanRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -698,6 +724,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiMpesaB2cResultRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/fees': {
+      id: '/api/fees'
+      path: '/api/fees'
+      fullPath: '/api/fees'
+      preLoaderRoute: typeof ApiFeesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/transactions': {
       id: '/admin/transactions'
       path: '/transactions'
@@ -724,6 +757,13 @@ declare module '@tanstack/react-router' {
       path: '/.mcp/list-tools'
       fullPath: '/.mcp/list-tools'
       preLoaderRoute: typeof Char91DotmcpChar93ListToolsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/aml-scan': {
+      id: '/api/public/aml-scan'
+      path: '/api/public/aml-scan'
+      fullPath: '/api/public/aml-scan'
+      preLoaderRoute: typeof ApiPublicAmlScanRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/.mcp/invoke-tool/$tool': {
@@ -769,6 +809,7 @@ const rootRouteChildren: RootRouteChildren = {
   Char91DotmcpChar93ListToolsRoute: Char91DotmcpChar93ListToolsRoute,
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
     Char91DotwellKnownChar93OauthProtectedResourceRoute,
+  ApiFeesRoute: ApiFeesRoute,
   ApiMpesaB2cResultRoute: ApiMpesaB2cResultRoute,
   ApiMpesaCallbackRoute: ApiMpesaCallbackRoute,
   ApiMpesaStatusRoute: ApiMpesaStatusRoute,
@@ -783,6 +824,7 @@ const rootRouteChildren: RootRouteChildren = {
   LegalRiskDisclosureRoute: LegalRiskDisclosureRoute,
   LegalTermsRoute: LegalTermsRoute,
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
+  ApiPublicAmlScanRoute: ApiPublicAmlScanRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
