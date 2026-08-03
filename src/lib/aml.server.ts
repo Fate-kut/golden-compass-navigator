@@ -41,7 +41,7 @@ export async function raiseFlag(params: {
       flag_reason: params.reason,
       amount: params.amount ?? null,
       severity: params.severity ?? "medium",
-      details: params.details ?? {},
+      details: (params.details ?? {}) as never,
       status: "open",
     })
     .select("id")
