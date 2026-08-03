@@ -2,6 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { rateLimit } from "@/lib/rate-limit.server";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { authenticateRequest, json } from "@/lib/auth.server";
+import { requireFreshAal2 } from "@/lib/mfa.server";
+import { checkTransactionLimit } from "@/lib/limits.server";
+import { screenTransaction } from "@/lib/aml.server";
 
 // Body: { pool_id: string, amount: number }
 // Enforces holding period & exit fee. Creates a 'pending' withdrawal transaction
@@ -13,8 +16,11 @@ export const Route = createFileRoute("/api/withdraw-request")({
         try {
           const authResult = await authenticateRequest(request);
           if (authResult instanceof Response) return authResult;
-          const { userId } = authResult;
+          const { userId, claims } = authResult;
           if (!rateLimit(userId, 5, 60_000)) return json({ error: "Too many requests" }, 429);
+
+          const mfaBlock = await requireFreshAal2(userId, claims);
+          if (mfaBlock) return mfaBlock;
 
           const body = (await request.json()) as { pool_id?: string; amount?: number; phone?: string };
           const pool_id = String(body.pool_id ?? "");
@@ -26,6 +32,10 @@ export const Route = createFileRoute("/api/withdraw-request")({
           else if (phone.startsWith("7") || phone.startsWith("1")) phone = "254" + phone;
           if (!pool_id || !amount || amount <= 0) return json({ error: "Invalid input" }, 400);
           if (!/^254(7|1)\d{8}$/.test(phone)) return json({ error: "Invalid M-Pesa phone number" }, 400);
+
+          // Compliance caps (placeholder thresholds — TBD).
+          const limit = await checkTransactionLimit(userId, "withdrawal", amount);
+          if (!limit.ok) return json({ error: limit.error }, 400);
 
           const [{ data: pool }, { data: inv }] = await Promise.all([
             supabaseAdmin
@@ -80,6 +90,8 @@ export const Route = createFileRoute("/api/withdraw-request")({
             .select("id")
             .single();
           if (txErr || !tx) return json({ error: "Failed to record request" }, 500);
+
+          await screenTransaction({ userId, transactionId: tx.id, amount, kind: "withdrawal" });
 
           // Reserve units immediately so balance can't be double-spent
           const ratio = currentValue > 0 ? amount / currentValue : 0;
