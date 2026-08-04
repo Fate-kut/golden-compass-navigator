@@ -27,6 +27,8 @@ interface Quote {
   currency: "KES" | "USD";
   source: "NSE" | "GLOBAL";
   sandbox: boolean;
+  simulated?: boolean;
+  fallback_reason?: string;
 }
 
 const EXCHANGES = ["NSE", "NGX", "JSE", "GSE", "GLOBAL"] as const;
@@ -186,10 +188,32 @@ function TradePage() {
             >
               <div className="flex items-baseline justify-between">
                 <span className="t-display t-gold" style={{ fontSize: 16 }}>{quote.symbol}</span>
-                <span className="t-mono t-muted" style={{ fontSize: 9 }}>
-                  {quote.source}{quote.sandbox ? " · SANDBOX" : ""}
+                <span className="flex items-center gap-2">
+                  <span
+                    className="t-mono"
+                    title={quote.fallback_reason ?? undefined}
+                    style={{
+                      fontSize: 9,
+                      letterSpacing: "0.12em",
+                      padding: "3px 7px",
+                      borderRadius: 999,
+                      border: `1px solid ${quote.simulated ? "rgba(220,170,90,0.45)" : "rgba(120,200,140,0.45)"}`,
+                      background: quote.simulated ? "rgba(220,170,90,0.12)" : "rgba(120,200,140,0.12)",
+                      color: quote.simulated ? "rgb(235,200,130)" : "rgb(150,220,170)",
+                    }}
+                  >
+                    {quote.simulated ? "SIMULATED" : "LIVE"}
+                  </span>
+                  <span className="t-mono t-muted" style={{ fontSize: 9 }}>
+                    {quote.source}{quote.sandbox ? " · SANDBOX" : ""}
+                  </span>
                 </span>
               </div>
+              {quote.fallback_reason && (
+                <p className="t-mono" style={{ marginTop: 6, fontSize: 9, color: "rgb(235,200,130)" }}>
+                  Live data unavailable — showing simulated prices.
+                </p>
+              )}
               <div className="flex items-baseline justify-between" style={{ marginTop: 6 }}>
                 <span className="t-serif" style={{ fontSize: 22, color: "var(--parchment)" }}>
                   {quote.currency} {quote.price.toLocaleString(undefined, { maximumFractionDigits: 2 })}

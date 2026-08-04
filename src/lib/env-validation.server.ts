@@ -27,6 +27,10 @@ const ENV_VARS: EnvVar[] = [
   { name: "MPESA_INITIATOR_NAME", required: false, description: "B2C initiator name" },
   { name: "MPESA_SECURITY_CREDENTIAL", required: false, description: "B2C encrypted security credential" },
   { name: "MPESA_B2C_SHORTCODE", required: false, description: "B2C shortcode" },
+
+  // Market data / broker (optional — without these, live mode falls back to the mock broker)
+  { name: "MYSTOCKS_API_KEY", required: false, description: "mystocks.africa partner API key (African exchanges) — read in src/lib/market.server.ts" },
+  { name: "FINNHUB_API_KEY", required: false, description: "Finnhub API key (global quotes) — read in src/lib/market.server.ts" },
 ];
 
 export function validateEnv(): { valid: boolean; errors: string[]; warnings: string[] } {
