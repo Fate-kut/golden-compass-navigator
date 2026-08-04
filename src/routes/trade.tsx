@@ -27,6 +27,8 @@ interface Quote {
   currency: "KES" | "USD";
   source: "NSE" | "GLOBAL";
   sandbox: boolean;
+  simulated?: boolean;
+  fallback_reason?: string;
 }
 
 const EXCHANGES = ["NSE", "NGX", "JSE", "GSE", "GLOBAL"] as const;
