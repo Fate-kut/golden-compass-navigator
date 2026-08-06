@@ -31,7 +31,10 @@ interface Quote {
   sandbox: boolean;
   simulated?: boolean;
   fallback_reason?: string;
+  anchored?: boolean;
+  stale_reason?: string;
 }
+
 
 const EXCHANGES = ["NSE", "NGX", "JSE", "GSE", "GLOBAL"] as const;
 
