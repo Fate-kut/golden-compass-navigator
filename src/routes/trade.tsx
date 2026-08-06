@@ -226,6 +226,16 @@ function TradePage() {
                   Live data unavailable — showing simulated prices.
                 </p>
               )}
+              {quote.stale_reason && (
+                <p className="t-mono" style={{ marginTop: 6, fontSize: 9, color: "rgb(235,200,130)" }}>
+                  Live tick rejected ({quote.stale_reason}) — showing simulated price.
+                </p>
+              )}
+              {quote.simulated && quote.anchored && (
+                <p className="t-mono" style={{ marginTop: 6, fontSize: 9, color: "rgb(150,220,170)" }}>
+                  Sandbox price anchored to the live market.
+                </p>
+              )}
               <div className="flex items-baseline justify-between" style={{ marginTop: 6 }}>
                 <span className="t-serif" style={{ fontSize: 22, color: "var(--parchment)" }}>
                   {quote.currency} {quote.price.toLocaleString(undefined, { maximumFractionDigits: 2 })}
@@ -241,8 +251,28 @@ function TradePage() {
                   {quote.change_pct.toFixed(2)}%
                 </span>
               </div>
+              <button
+                onClick={() => addToWatchlist(quote.symbol, exchange)}
+                className="t-mono"
+                style={{
+                  marginTop: 10,
+                  width: "100%",
+                  padding: "8px 12px",
+                  borderRadius: 10,
+                  border: "1px solid rgba(201,168,76,0.35)",
+                  background: "rgba(201,168,76,0.10)",
+                  color: "rgb(235,215,165)",
+                  fontSize: 10,
+                  letterSpacing: "0.1em",
+                  textTransform: "uppercase",
+                  cursor: "pointer",
+                }}
+              >
+                ☆ Add to watchlist
+              </button>
             </div>
           )}
+
         </div>
 
         <div style={cardStyle}>
