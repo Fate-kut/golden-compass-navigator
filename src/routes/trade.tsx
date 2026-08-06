@@ -48,6 +48,13 @@ function TradePage() {
   const [quoteLoading, setQuoteLoading] = useState(false);
   const [placing, setPlacing] = useState<"buy" | "sell" | null>(null);
   const { orders, loading: ordersLoading, refresh: refreshOrders } = useOrders(user?.id);
+  const {
+    items: watchlist,
+    loading: watchlistLoading,
+    add: addToWatchlist,
+    remove: removeFromWatchlist,
+  } = useWatchlist(user?.id);
+
 
   if (authLoading) return null;
   if (!user) return <Navigate to="/login" />;
