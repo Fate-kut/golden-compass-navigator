@@ -4,6 +4,8 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { OrderList, useOrders } from "@/components/OrderHistory";
+import { Watchlist, useWatchlist } from "@/components/Watchlist";
+
 
 export const Route = createFileRoute("/trade")({
   head: () => ({
