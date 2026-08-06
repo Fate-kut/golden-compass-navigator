@@ -155,6 +155,21 @@ function TradePage() {
       </header>
 
       <div className="flex flex-col gap-3" style={{ padding: "8px 16px 24px" }}>
+        <p
+          className="t-mono"
+          style={{
+            padding: "8px 12px",
+            borderRadius: 10,
+            border: "1px solid rgba(220,170,90,0.35)",
+            background: "rgba(220,170,90,0.10)",
+            color: "rgb(235,200,130)",
+            fontSize: 9,
+            letterSpacing: "0.08em",
+          }}
+        >
+          SIMULATED TRADING — NOT REAL MONEY MARKETS
+        </p>
+
         <div style={cardStyle}>
           <div className="flex gap-2">
             <div style={{ flex: 1 }}>
