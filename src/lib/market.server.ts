@@ -10,7 +10,8 @@
 // call falls back to the simulated broker and the response is tagged with
 // `fallback_reason` so the UI can show why.
 import { getBrokerMode } from "@/lib/config.server";
-import { mockGetQuote, mockPlaceOrder } from "@/lib/broker/mock-provider.server";
+import { mockGetQuote, mockPlaceOrder, quoteLooksStale } from "@/lib/broker/mock-provider.server";
+
 
 const AFRICAN_EXCHANGES = ["NSE", "NGX", "JSE", "GSE"] as const;
 type AfricanExchange = (typeof AFRICAN_EXCHANGES)[number];
