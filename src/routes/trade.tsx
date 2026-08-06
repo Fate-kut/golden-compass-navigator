@@ -359,6 +359,22 @@ function TradePage() {
         </div>
 
         <section className="flex flex-col gap-2" style={{ marginTop: 8 }}>
+          <h2 className="t-mono t-sec" style={{ fontSize: 9, letterSpacing: "0.18em" }}>
+            WATCHLIST
+          </h2>
+          <Watchlist
+            items={watchlist}
+            loading={watchlistLoading}
+            onSelect={(it) => {
+              setSymbol(it.symbol);
+              setExchange(it.exchange as typeof exchange);
+            }}
+            onRemove={removeFromWatchlist}
+          />
+        </section>
+
+        <section className="flex flex-col gap-2" style={{ marginTop: 8 }}>
+
           <div className="flex items-baseline justify-between">
             <h2 className="t-mono t-sec" style={{ fontSize: 9, letterSpacing: "0.18em" }}>
               RECENT ORDERS
