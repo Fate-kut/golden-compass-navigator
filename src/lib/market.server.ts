@@ -35,7 +35,12 @@ export interface NormalizedQuote {
   simulated: boolean;
   /** Set when broker_mode is 'live' but this call had to fall back to the mock. */
   fallback_reason?: string;
+  /** True when a simulated price was anchored to a real live quote. */
+  anchored?: boolean;
+  /** Set when a live tick was rejected by the stale-quote guard. */
+  stale_reason?: string;
 }
+
 
 /** Thrown when a live provider cannot run because its API key is not configured. */
 class MissingProviderKeyError extends Error {
