@@ -10,7 +10,8 @@
 // call falls back to the simulated broker and the response is tagged with
 // `fallback_reason` so the UI can show why.
 import { getBrokerMode } from "@/lib/config.server";
-import { mockGetQuote, mockPlaceOrder } from "@/lib/broker/mock-provider.server";
+import { mockGetQuote, mockPlaceOrder, quoteLooksStale } from "@/lib/broker/mock-provider.server";
+
 
 const AFRICAN_EXCHANGES = ["NSE", "NGX", "JSE", "GSE"] as const;
 type AfricanExchange = (typeof AFRICAN_EXCHANGES)[number];
@@ -34,7 +35,12 @@ export interface NormalizedQuote {
   simulated: boolean;
   /** Set when broker_mode is 'live' but this call had to fall back to the mock. */
   fallback_reason?: string;
+  /** True when a simulated price was anchored to a real live quote. */
+  anchored?: boolean;
+  /** Set when a live tick was rejected by the stale-quote guard. */
+  stale_reason?: string;
 }
+
 
 /** Thrown when a live provider cannot run because its API key is not configured. */
 class MissingProviderKeyError extends Error {
@@ -81,14 +87,42 @@ function requireKey(name: "MYSTOCKS_API_KEY" | "FINNHUB_API_KEY", whereRead: str
   return key;
 }
 
+/** Fetches a real live quote, or null when no provider key / provider fails. */
+async function tryLiveQuote(symbol: string, exchange: string): Promise<NormalizedQuote | null> {
+  try {
+    return isAfrican(exchange)
+      ? await getMyStocksQuote(symbol, exchange)
+      : await getFinnhubQuote(symbol);
+  } catch (e) {
+    if (!(e instanceof MissingProviderKeyError)) {
+      console.warn(`[market] live quote failed: ${e instanceof Error ? e.message : String(e)}`);
+    }
+    return null;
+  }
+}
+
 export async function getQuote(symbol: string, exchange: string): Promise<NormalizedQuote> {
   const mode = await getBrokerMode();
+
   if (mode === "mock") {
-    return mockGetQuote(symbol, exchange);
+    // Sandbox mode is a deliberate simulator, not a blind stub: when a live
+    // provider key exists we anchor the simulated price to the real market.
+    const live = await tryLiveQuote(symbol, exchange);
+    return mockGetQuote(symbol, exchange, live?.price);
   }
+
   try {
-    if (isAfrican(exchange)) return await getMyStocksQuote(symbol, exchange);
-    return await getFinnhubQuote(symbol);
+    const q = isAfrican(exchange)
+      ? await getMyStocksQuote(symbol, exchange)
+      : await getFinnhubQuote(symbol);
+
+    const stale = quoteLooksStale(q.symbol, q.price);
+    if (stale) {
+      console.warn(`[market] rejected live tick for ${q.symbol}: ${stale}`);
+      const m = await mockGetQuote(symbol, exchange);
+      return { ...m, stale_reason: stale };
+    }
+    return q;
   } catch (e) {
     if (e instanceof MissingProviderKeyError) {
       console.warn(`[market] live quote unavailable, falling back to mock: ${e.message}`);
@@ -98,6 +132,7 @@ export async function getQuote(symbol: string, exchange: string): Promise<Normal
     throw e;
   }
 }
+
 
 async function getMyStocksQuote(
   symbol: string,

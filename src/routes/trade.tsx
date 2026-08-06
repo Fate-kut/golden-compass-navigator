@@ -4,6 +4,8 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { OrderList, useOrders } from "@/components/OrderHistory";
+import { Watchlist, useWatchlist } from "@/components/Watchlist";
+
 
 export const Route = createFileRoute("/trade")({
   head: () => ({
@@ -29,7 +31,10 @@ interface Quote {
   sandbox: boolean;
   simulated?: boolean;
   fallback_reason?: string;
+  anchored?: boolean;
+  stale_reason?: string;
 }
+
 
 const EXCHANGES = ["NSE", "NGX", "JSE", "GSE", "GLOBAL"] as const;
 
@@ -43,6 +48,13 @@ function TradePage() {
   const [quoteLoading, setQuoteLoading] = useState(false);
   const [placing, setPlacing] = useState<"buy" | "sell" | null>(null);
   const { orders, loading: ordersLoading, refresh: refreshOrders } = useOrders(user?.id);
+  const {
+    items: watchlist,
+    loading: watchlistLoading,
+    add: addToWatchlist,
+    remove: removeFromWatchlist,
+  } = useWatchlist(user?.id);
+
 
   if (authLoading) return null;
   if (!user) return <Navigate to="/login" />;
@@ -143,6 +155,21 @@ function TradePage() {
       </header>
 
       <div className="flex flex-col gap-3" style={{ padding: "8px 16px 24px" }}>
+        <p
+          className="t-mono"
+          style={{
+            padding: "8px 12px",
+            borderRadius: 10,
+            border: "1px solid rgba(220,170,90,0.35)",
+            background: "rgba(220,170,90,0.10)",
+            color: "rgb(235,200,130)",
+            fontSize: 9,
+            letterSpacing: "0.08em",
+          }}
+        >
+          SIMULATED TRADING — NOT REAL MONEY MARKETS
+        </p>
+
         <div style={cardStyle}>
           <div className="flex gap-2">
             <div style={{ flex: 1 }}>
@@ -214,6 +241,16 @@ function TradePage() {
                   Live data unavailable — showing simulated prices.
                 </p>
               )}
+              {quote.stale_reason && (
+                <p className="t-mono" style={{ marginTop: 6, fontSize: 9, color: "rgb(235,200,130)" }}>
+                  Live tick rejected ({quote.stale_reason}) — showing simulated price.
+                </p>
+              )}
+              {quote.simulated && quote.anchored && (
+                <p className="t-mono" style={{ marginTop: 6, fontSize: 9, color: "rgb(150,220,170)" }}>
+                  Sandbox price anchored to the live market.
+                </p>
+              )}
               <div className="flex items-baseline justify-between" style={{ marginTop: 6 }}>
                 <span className="t-serif" style={{ fontSize: 22, color: "var(--parchment)" }}>
                   {quote.currency} {quote.price.toLocaleString(undefined, { maximumFractionDigits: 2 })}
@@ -229,8 +266,28 @@ function TradePage() {
                   {quote.change_pct.toFixed(2)}%
                 </span>
               </div>
+              <button
+                onClick={() => addToWatchlist(quote.symbol, exchange)}
+                className="t-mono"
+                style={{
+                  marginTop: 10,
+                  width: "100%",
+                  padding: "8px 12px",
+                  borderRadius: 10,
+                  border: "1px solid rgba(201,168,76,0.35)",
+                  background: "rgba(201,168,76,0.10)",
+                  color: "rgb(235,215,165)",
+                  fontSize: 10,
+                  letterSpacing: "0.1em",
+                  textTransform: "uppercase",
+                  cursor: "pointer",
+                }}
+              >
+                ☆ Add to watchlist
+              </button>
             </div>
           )}
+
         </div>
 
         <div style={cardStyle}>
@@ -302,6 +359,22 @@ function TradePage() {
         </div>
 
         <section className="flex flex-col gap-2" style={{ marginTop: 8 }}>
+          <h2 className="t-mono t-sec" style={{ fontSize: 9, letterSpacing: "0.18em" }}>
+            WATCHLIST
+          </h2>
+          <Watchlist
+            items={watchlist}
+            loading={watchlistLoading}
+            onSelect={(it) => {
+              setSymbol(it.symbol);
+              setExchange(it.exchange as typeof exchange);
+            }}
+            onRemove={removeFromWatchlist}
+          />
+        </section>
+
+        <section className="flex flex-col gap-2" style={{ marginTop: 8 }}>
+
           <div className="flex items-baseline justify-between">
             <h2 className="t-mono t-sec" style={{ fontSize: 9, letterSpacing: "0.18em" }}>
               RECENT ORDERS
