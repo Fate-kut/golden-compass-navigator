@@ -15,7 +15,10 @@ export interface MockQuote {
   source: "NSE" | "GLOBAL";
   sandbox: boolean;
   simulated: true;
+  /** True when the simulated price was anchored to a real live quote. */
+  anchored?: boolean;
 }
+
 
 const AFRICAN = new Set(["NSE", "NGX", "JSE", "GSE"]);
 
