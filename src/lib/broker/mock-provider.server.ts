@@ -35,14 +35,26 @@ function seedFor(symbol: string): number {
 // MOCK: in-memory last price per symbol. Resets on worker restart — fine for a PoC.
 const lastPrice = new Map<string, number>();
 
-export async function mockGetQuote(symbol: string, exchange: string): Promise<MockQuote> {
+/**
+ * Simulated quote.
+ *
+ * When `anchor` (a real live price) is supplied the simulator walks around that
+ * real price instead of a fabricated base, so sandbox mode still reflects true
+ * market action — the OpenAlgo sandbox pattern.
+ */
+export async function mockGetQuote(
+  symbol: string,
+  exchange: string,
+  anchor?: number,
+): Promise<MockQuote> {
   const sym = symbol.toUpperCase();
   const african = AFRICAN.has(exchange.toUpperCase());
   const seed = seedFor(sym);
-  const base = african ? 5 + seed * 495 : 20 + seed * 480; // KES 5–500 / USD 20–500
+  const anchored = typeof anchor === "number" && Number.isFinite(anchor) && anchor > 0;
+  const base = anchored ? anchor! : african ? 5 + seed * 495 : 20 + seed * 480;
   const { volatility_pct } = await getMockBrokerSettings();
 
-  const prev = lastPrice.get(sym) ?? base;
+  const prev = anchored ? anchor! : (lastPrice.get(sym) ?? base);
   const drift = (Math.random() - 0.5) * 2 * (volatility_pct / 100) * prev;
   const price = Math.max(0.5, Number((prev + drift).toFixed(2)));
   lastPrice.set(sym, price);
@@ -55,8 +67,31 @@ export async function mockGetQuote(symbol: string, exchange: string): Promise<Mo
     source: african ? "NSE" : "GLOBAL",
     sandbox: true,
     simulated: true,
+    anchored,
   };
 }
+
+/**
+ * Stale/bad-tick guard (OpenAlgo `quote_looks_stale`). Rejects prices that are
+ * non-finite, non-positive, outside the session high/low, or that jump
+ * implausibly far from the last observed price for the symbol.
+ */
+export function quoteLooksStale(
+  symbol: string,
+  price: number,
+  bounds?: { high?: number; low?: number },
+): string | null {
+  if (!Number.isFinite(price) || price <= 0) return "provider returned a non-positive price";
+  if (bounds?.high && bounds?.low && (price > bounds.high * 1.001 || price < bounds.low * 0.999)) {
+    return "price falls outside the session high/low range";
+  }
+  const prev = lastPrice.get(symbol.toUpperCase());
+  if (prev && (price > prev * 1.5 || price < prev * 0.5)) {
+    return "price moved implausibly far from the previous tick";
+  }
+  return null;
+}
+
 
 export interface MockOrderInput {
   symbol: string;
