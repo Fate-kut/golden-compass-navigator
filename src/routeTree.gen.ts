@@ -40,6 +40,7 @@ import { Route as ApiMpesaStatusRouteImport } from './routes/api/mpesa-status'
 import { Route as ApiMpesaCallbackRouteImport } from './routes/api/mpesa-callback'
 import { Route as ApiMpesaB2cResultRouteImport } from './routes/api/mpesa-b2c-result'
 import { Route as ApiFeesRouteImport } from './routes/api/fees'
+import { Route as ApiCandlesRouteImport } from './routes/api/candles'
 import { Route as AdminTransactionsRouteImport } from './routes/admin.transactions'
 import { Route as AdminKycRouteImport } from './routes/admin.kyc'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
@@ -202,6 +203,11 @@ const ApiFeesRoute = ApiFeesRouteImport.update({
   path: '/api/fees',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiCandlesRoute = ApiCandlesRouteImport.update({
+  id: '/api/candles',
+  path: '/api/candles',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminTransactionsRoute = AdminTransactionsRouteImport.update({
   id: '/transactions',
   path: '/transactions',
@@ -258,6 +264,7 @@ export interface FileRoutesByFullPath {
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/admin/kyc': typeof AdminKycRoute
   '/admin/transactions': typeof AdminTransactionsRoute
+  '/api/candles': typeof ApiCandlesRoute
   '/api/fees': typeof ApiFeesRoute
   '/api/mpesa-b2c-result': typeof ApiMpesaB2cResultRoute
   '/api/mpesa-callback': typeof ApiMpesaCallbackRoute
@@ -297,6 +304,7 @@ export interface FileRoutesByTo {
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/admin/kyc': typeof AdminKycRoute
   '/admin/transactions': typeof AdminTransactionsRoute
+  '/api/candles': typeof ApiCandlesRoute
   '/api/fees': typeof ApiFeesRoute
   '/api/mpesa-b2c-result': typeof ApiMpesaB2cResultRoute
   '/api/mpesa-callback': typeof ApiMpesaCallbackRoute
@@ -337,6 +345,7 @@ export interface FileRoutesById {
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/admin/kyc': typeof AdminKycRoute
   '/admin/transactions': typeof AdminTransactionsRoute
+  '/api/candles': typeof ApiCandlesRoute
   '/api/fees': typeof ApiFeesRoute
   '/api/mpesa-b2c-result': typeof ApiMpesaB2cResultRoute
   '/api/mpesa-callback': typeof ApiMpesaCallbackRoute
@@ -378,6 +387,7 @@ export interface FileRouteTypes {
     | '/.well-known/oauth-protected-resource'
     | '/admin/kyc'
     | '/admin/transactions'
+    | '/api/candles'
     | '/api/fees'
     | '/api/mpesa-b2c-result'
     | '/api/mpesa-callback'
@@ -417,6 +427,7 @@ export interface FileRouteTypes {
     | '/.well-known/oauth-protected-resource'
     | '/admin/kyc'
     | '/admin/transactions'
+    | '/api/candles'
     | '/api/fees'
     | '/api/mpesa-b2c-result'
     | '/api/mpesa-callback'
@@ -456,6 +467,7 @@ export interface FileRouteTypes {
     | '/.well-known/oauth-protected-resource'
     | '/admin/kyc'
     | '/admin/transactions'
+    | '/api/candles'
     | '/api/fees'
     | '/api/mpesa-b2c-result'
     | '/api/mpesa-callback'
@@ -494,6 +506,7 @@ export interface RootRouteChildren {
   TradeRoute: typeof TradeRoute
   Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  ApiCandlesRoute: typeof ApiCandlesRoute
   ApiFeesRoute: typeof ApiFeesRoute
   ApiMpesaB2cResultRoute: typeof ApiMpesaB2cResultRoute
   ApiMpesaCallbackRoute: typeof ApiMpesaCallbackRoute
@@ -731,6 +744,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiFeesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/candles': {
+      id: '/api/candles'
+      path: '/api/candles'
+      fullPath: '/api/candles'
+      preLoaderRoute: typeof ApiCandlesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/transactions': {
       id: '/admin/transactions'
       path: '/transactions'
@@ -809,6 +829,7 @@ const rootRouteChildren: RootRouteChildren = {
   Char91DotmcpChar93ListToolsRoute: Char91DotmcpChar93ListToolsRoute,
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
     Char91DotwellKnownChar93OauthProtectedResourceRoute,
+  ApiCandlesRoute: ApiCandlesRoute,
   ApiFeesRoute: ApiFeesRoute,
   ApiMpesaB2cResultRoute: ApiMpesaB2cResultRoute,
   ApiMpesaCallbackRoute: ApiMpesaCallbackRoute,
