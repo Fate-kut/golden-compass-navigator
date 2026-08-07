@@ -71,7 +71,10 @@ function TradePage() {
   // Inline quick trade from a watchlist row — same endpoint as the main form.
   const quickTrade = async (item: WatchlistItem, side: "buy" | "sell", qty: number) => {
     const acct = accountId.trim();
-    if (!acct) return toast.error("Enter your brokerage account ID first");
+    if (!acct) {
+      toast.error("Enter your brokerage account ID first");
+      return;
+    }
     try {
       const { data: sess } = await supabase.auth.getSession();
       const token = sess.session?.access_token;
