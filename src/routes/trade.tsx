@@ -412,8 +412,18 @@ function TradePage() {
               setExchange(it.exchange as typeof exchange);
             }}
             onRemove={removeFromWatchlist}
+            onAlert={(it, price, currency) =>
+              setAlertTarget({ symbol: it.symbol, exchange: it.exchange, price, currency })
+            }
+            onTrade={quickTrade}
           />
+
+          <h2 className="t-mono t-sec" style={{ fontSize: 9, letterSpacing: "0.18em", marginTop: 8 }}>
+            PRICE ALERTS
+          </h2>
+          <AlertsPanel alerts={alerts} loading={alertsLoading} onRemove={removeAlert} />
         </section>
+
 
         <section className="flex flex-col gap-2" style={{ marginTop: 8 }}>
 
