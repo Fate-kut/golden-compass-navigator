@@ -188,16 +188,37 @@ function TradePage() {
   return (
     <div className="flex flex-col" style={{ minHeight: "100%" }}>
       <header style={{ padding: "20px 20px 12px" }}>
-        <div className="flex items-center gap-3">
-          <span style={{ fontSize: 28 }}>📈</span>
-          <div>
-            <h1 className="t-display t-gold" style={{ fontSize: 18 }}>Trade Stocks</h1>
-            <p className="t-mono t-muted" style={{ fontSize: 9, letterSpacing: "0.1em" }}>
-              NSE KENYA · GLOBAL MARKETS
-            </p>
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <span style={{ fontSize: 28 }}>📈</span>
+            <div>
+              <h1 className="t-display t-gold" style={{ fontSize: 18 }}>Trade Stocks</h1>
+              <p className="t-mono t-muted" style={{ fontSize: 9, letterSpacing: "0.1em" }}>
+                NSE KENYA · GLOBAL MARKETS
+              </p>
+            </div>
           </div>
+          <SearchButton onClick={() => setSearchOpen(true)} />
         </div>
       </header>
+
+      <SearchDialog
+        open={searchOpen}
+        onClose={() => setSearchOpen(false)}
+        watchlist={watchlist}
+        onAdd={addToWatchlist}
+        onRemove={removeFromWatchlist}
+      />
+      <AlertModal
+        open={alertTarget !== null}
+        symbol={alertTarget?.symbol ?? ""}
+        exchange={alertTarget?.exchange ?? "NSE"}
+        currentPrice={alertTarget?.price}
+        currency={alertTarget?.currency}
+        onClose={() => setAlertTarget(null)}
+        onCreate={createAlert}
+      />
+
 
       <div className="flex flex-col gap-3" style={{ padding: "8px 16px 24px" }}>
         <p
