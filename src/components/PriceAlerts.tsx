@@ -62,7 +62,10 @@ export function usePriceAlerts(userId?: string) {
   const remove = useCallback(
     async (id: string) => {
       const { error } = await supabase.from("price_alerts").delete().eq("id", id);
-      if (error) return toast.error(error.message);
+      if (error) {
+        toast.error(error.message);
+        return;
+      }
       await refresh();
     },
     [refresh],

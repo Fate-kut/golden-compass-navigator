@@ -50,7 +50,10 @@ export function useWatchlist(userId?: string) {
   const remove = useCallback(
     async (id: string) => {
       const { error } = await supabase.from("watchlists").delete().eq("id", id);
-      if (error) return toast.error(error.message);
+      if (error) {
+        toast.error(error.message);
+        return;
+      }
       await refresh();
     },
     [refresh],
