@@ -26,6 +26,7 @@ import { Route as HistoryRouteImport } from './routes/history'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as StockSymbolRouteImport } from './routes/stock.$symbol'
 import { Route as LegalTermsRouteImport } from './routes/legal.terms'
 import { Route as LegalRiskDisclosureRouteImport } from './routes/legal.risk-disclosure'
 import { Route as LegalPrivacyRouteImport } from './routes/legal.privacy'
@@ -132,6 +133,11 @@ const AdminRoute = AdminRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StockSymbolRoute = StockSymbolRouteImport.update({
+  id: '/stock/$symbol',
+  path: '/stock/$symbol',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LegalTermsRoute = LegalTermsRouteImport.update({
@@ -286,6 +292,7 @@ export interface FileRoutesByFullPath {
   '/legal/privacy': typeof LegalPrivacyRoute
   '/legal/risk-disclosure': typeof LegalRiskDisclosureRoute
   '/legal/terms': typeof LegalTermsRoute
+  '/stock/$symbol': typeof StockSymbolRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/api/public/aml-scan': typeof ApiPublicAmlScanRoute
   '/api/public/check-price-alerts': typeof ApiPublicCheckPriceAlertsRoute
@@ -327,6 +334,7 @@ export interface FileRoutesByTo {
   '/legal/privacy': typeof LegalPrivacyRoute
   '/legal/risk-disclosure': typeof LegalRiskDisclosureRoute
   '/legal/terms': typeof LegalTermsRoute
+  '/stock/$symbol': typeof StockSymbolRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/api/public/aml-scan': typeof ApiPublicAmlScanRoute
   '/api/public/check-price-alerts': typeof ApiPublicCheckPriceAlertsRoute
@@ -369,6 +377,7 @@ export interface FileRoutesById {
   '/legal/privacy': typeof LegalPrivacyRoute
   '/legal/risk-disclosure': typeof LegalRiskDisclosureRoute
   '/legal/terms': typeof LegalTermsRoute
+  '/stock/$symbol': typeof StockSymbolRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/api/public/aml-scan': typeof ApiPublicAmlScanRoute
   '/api/public/check-price-alerts': typeof ApiPublicCheckPriceAlertsRoute
@@ -412,6 +421,7 @@ export interface FileRouteTypes {
     | '/legal/privacy'
     | '/legal/risk-disclosure'
     | '/legal/terms'
+    | '/stock/$symbol'
     | '/.mcp/invoke-tool/$tool'
     | '/api/public/aml-scan'
     | '/api/public/check-price-alerts'
@@ -453,6 +463,7 @@ export interface FileRouteTypes {
     | '/legal/privacy'
     | '/legal/risk-disclosure'
     | '/legal/terms'
+    | '/stock/$symbol'
     | '/.mcp/invoke-tool/$tool'
     | '/api/public/aml-scan'
     | '/api/public/check-price-alerts'
@@ -494,6 +505,7 @@ export interface FileRouteTypes {
     | '/legal/privacy'
     | '/legal/risk-disclosure'
     | '/legal/terms'
+    | '/stock/$symbol'
     | '/.mcp/invoke-tool/$tool'
     | '/api/public/aml-scan'
     | '/api/public/check-price-alerts'
@@ -534,6 +546,7 @@ export interface RootRouteChildren {
   LegalPrivacyRoute: typeof LegalPrivacyRoute
   LegalRiskDisclosureRoute: typeof LegalRiskDisclosureRoute
   LegalTermsRoute: typeof LegalTermsRoute
+  StockSymbolRoute: typeof StockSymbolRoute
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
   ApiPublicAmlScanRoute: typeof ApiPublicAmlScanRoute
   ApiPublicCheckPriceAlertsRoute: typeof ApiPublicCheckPriceAlertsRoute
@@ -658,6 +671,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/stock/$symbol': {
+      id: '/stock/$symbol'
+      path: '/stock/$symbol'
+      fullPath: '/stock/$symbol'
+      preLoaderRoute: typeof StockSymbolRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/legal/terms': {
@@ -865,6 +885,7 @@ const rootRouteChildren: RootRouteChildren = {
   LegalPrivacyRoute: LegalPrivacyRoute,
   LegalRiskDisclosureRoute: LegalRiskDisclosureRoute,
   LegalTermsRoute: LegalTermsRoute,
+  StockSymbolRoute: StockSymbolRoute,
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
   ApiPublicAmlScanRoute: ApiPublicAmlScanRoute,
   ApiPublicCheckPriceAlertsRoute: ApiPublicCheckPriceAlertsRoute,
