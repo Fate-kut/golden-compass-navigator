@@ -57,10 +57,49 @@ function TradePage() {
     add: addToWatchlist,
     remove: removeFromWatchlist,
   } = useWatchlist(user?.id);
+  const { alerts, loading: alertsLoading, create: createAlert, remove: removeAlert } = usePriceAlerts(user?.id);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [alertTarget, setAlertTarget] = useState<{
+    symbol: string;
+    exchange: string;
+    price?: number;
+    currency?: string;
+  } | null>(null);
 
+  useSearchHotkey(useCallback(() => setSearchOpen(true), []));
+
+  // Inline quick trade from a watchlist row — same endpoint as the main form.
+  const quickTrade = async (item: WatchlistItem, side: "buy" | "sell", qty: number) => {
+    const acct = accountId.trim();
+    if (!acct) return toast.error("Enter your brokerage account ID first");
+    try {
+      const { data: sess } = await supabase.auth.getSession();
+      const token = sess.session?.access_token;
+      if (!token) throw new Error("Not signed in");
+      const res = await fetch("/api/trade", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({
+          symbol: item.symbol,
+          side,
+          quantity: qty,
+          account_id: acct,
+          exchange: item.exchange,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error ?? "Order failed");
+      toast.success(`${side === "buy" ? "Buy" : "Sell"} order placed for ${qty} ${item.symbol}`);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Order failed");
+    } finally {
+      await refreshOrders();
+    }
+  };
 
   if (authLoading) return null;
   if (!user) return <Navigate to="/login" />;
+
 
   const fetchQuote = async () => {
     const sym = symbol.trim().toUpperCase();
