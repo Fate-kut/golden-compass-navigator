@@ -19,6 +19,7 @@ import { Route as PoolsRouteImport } from './routes/pools'
 import { Route as OrdersRouteImport } from './routes/orders'
 import { Route as NavigatorRouteImport } from './routes/navigator'
 import { Route as McpRouteImport } from './routes/mcp'
+import { Route as MarketsRouteImport } from './routes/markets'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as KycRouteImport } from './routes/kyc'
 import { Route as HomeRouteImport } from './routes/home'
@@ -98,6 +99,11 @@ const NavigatorRoute = NavigatorRouteImport.update({
 const McpRoute = McpRouteImport.update({
   id: '/mcp',
   path: '/mcp',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MarketsRoute = MarketsRouteImport.update({
+  id: '/markets',
+  path: '/markets',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -263,6 +269,7 @@ export interface FileRoutesByFullPath {
   '/home': typeof HomeRoute
   '/kyc': typeof KycRoute
   '/login': typeof LoginRoute
+  '/markets': typeof MarketsRoute
   '/mcp': typeof McpRoute
   '/navigator': typeof NavigatorRoute
   '/orders': typeof OrdersRoute
@@ -305,6 +312,7 @@ export interface FileRoutesByTo {
   '/home': typeof HomeRoute
   '/kyc': typeof KycRoute
   '/login': typeof LoginRoute
+  '/markets': typeof MarketsRoute
   '/mcp': typeof McpRoute
   '/navigator': typeof NavigatorRoute
   '/orders': typeof OrdersRoute
@@ -348,6 +356,7 @@ export interface FileRoutesById {
   '/home': typeof HomeRoute
   '/kyc': typeof KycRoute
   '/login': typeof LoginRoute
+  '/markets': typeof MarketsRoute
   '/mcp': typeof McpRoute
   '/navigator': typeof NavigatorRoute
   '/orders': typeof OrdersRoute
@@ -392,6 +401,7 @@ export interface FileRouteTypes {
     | '/home'
     | '/kyc'
     | '/login'
+    | '/markets'
     | '/mcp'
     | '/navigator'
     | '/orders'
@@ -434,6 +444,7 @@ export interface FileRouteTypes {
     | '/home'
     | '/kyc'
     | '/login'
+    | '/markets'
     | '/mcp'
     | '/navigator'
     | '/orders'
@@ -476,6 +487,7 @@ export interface FileRouteTypes {
     | '/home'
     | '/kyc'
     | '/login'
+    | '/markets'
     | '/mcp'
     | '/navigator'
     | '/orders'
@@ -519,6 +531,7 @@ export interface RootRouteChildren {
   HomeRoute: typeof HomeRoute
   KycRoute: typeof KycRoute
   LoginRoute: typeof LoginRoute
+  MarketsRoute: typeof MarketsRoute
   McpRoute: typeof McpRoute
   NavigatorRoute: typeof NavigatorRoute
   OrdersRoute: typeof OrdersRoute
@@ -622,6 +635,13 @@ declare module '@tanstack/react-router' {
       path: '/mcp'
       fullPath: '/mcp'
       preLoaderRoute: typeof McpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/markets': {
+      id: '/markets'
+      path: '/markets'
+      fullPath: '/markets'
+      preLoaderRoute: typeof MarketsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -857,6 +877,7 @@ const rootRouteChildren: RootRouteChildren = {
   HomeRoute: HomeRoute,
   KycRoute: KycRoute,
   LoginRoute: LoginRoute,
+  MarketsRoute: MarketsRoute,
   McpRoute: McpRoute,
   NavigatorRoute: NavigatorRoute,
   OrdersRoute: OrdersRoute,
