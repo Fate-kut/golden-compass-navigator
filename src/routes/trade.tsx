@@ -1,10 +1,13 @@
 import { createFileRoute, Link, Navigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { OrderList, useOrders } from "@/components/OrderHistory";
-import { Watchlist, useWatchlist } from "@/components/Watchlist";
+import { Watchlist, useWatchlist, type WatchlistItem } from "@/components/Watchlist";
+import { SearchDialog, SearchButton, useSearchHotkey } from "@/components/SearchDialog";
+import { AlertModal, AlertsPanel, usePriceAlerts } from "@/components/PriceAlerts";
+
 
 
 export const Route = createFileRoute("/trade")({
@@ -54,10 +57,52 @@ function TradePage() {
     add: addToWatchlist,
     remove: removeFromWatchlist,
   } = useWatchlist(user?.id);
+  const { alerts, loading: alertsLoading, create: createAlert, remove: removeAlert } = usePriceAlerts(user?.id);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [alertTarget, setAlertTarget] = useState<{
+    symbol: string;
+    exchange: string;
+    price?: number;
+    currency?: string;
+  } | null>(null);
 
+  useSearchHotkey(useCallback(() => setSearchOpen(true), []));
+
+  // Inline quick trade from a watchlist row — same endpoint as the main form.
+  const quickTrade = async (item: WatchlistItem, side: "buy" | "sell", qty: number) => {
+    const acct = accountId.trim();
+    if (!acct) {
+      toast.error("Enter your brokerage account ID first");
+      return;
+    }
+    try {
+      const { data: sess } = await supabase.auth.getSession();
+      const token = sess.session?.access_token;
+      if (!token) throw new Error("Not signed in");
+      const res = await fetch("/api/trade", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({
+          symbol: item.symbol,
+          side,
+          quantity: qty,
+          account_id: acct,
+          exchange: item.exchange,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error ?? "Order failed");
+      toast.success(`${side === "buy" ? "Buy" : "Sell"} order placed for ${qty} ${item.symbol}`);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Order failed");
+    } finally {
+      await refreshOrders();
+    }
+  };
 
   if (authLoading) return null;
   if (!user) return <Navigate to="/login" />;
+
 
   const fetchQuote = async () => {
     const sym = symbol.trim().toUpperCase();
@@ -143,16 +188,37 @@ function TradePage() {
   return (
     <div className="flex flex-col" style={{ minHeight: "100%" }}>
       <header style={{ padding: "20px 20px 12px" }}>
-        <div className="flex items-center gap-3">
-          <span style={{ fontSize: 28 }}>📈</span>
-          <div>
-            <h1 className="t-display t-gold" style={{ fontSize: 18 }}>Trade Stocks</h1>
-            <p className="t-mono t-muted" style={{ fontSize: 9, letterSpacing: "0.1em" }}>
-              NSE KENYA · GLOBAL MARKETS
-            </p>
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <span style={{ fontSize: 28 }}>📈</span>
+            <div>
+              <h1 className="t-display t-gold" style={{ fontSize: 18 }}>Trade Stocks</h1>
+              <p className="t-mono t-muted" style={{ fontSize: 9, letterSpacing: "0.1em" }}>
+                NSE KENYA · GLOBAL MARKETS
+              </p>
+            </div>
           </div>
+          <SearchButton onClick={() => setSearchOpen(true)} />
         </div>
       </header>
+
+      <SearchDialog
+        open={searchOpen}
+        onClose={() => setSearchOpen(false)}
+        watchlist={watchlist}
+        onAdd={addToWatchlist}
+        onRemove={removeFromWatchlist}
+      />
+      <AlertModal
+        open={alertTarget !== null}
+        symbol={alertTarget?.symbol ?? ""}
+        exchange={alertTarget?.exchange ?? "NSE"}
+        currentPrice={alertTarget?.price}
+        currency={alertTarget?.currency}
+        onClose={() => setAlertTarget(null)}
+        onCreate={createAlert}
+      />
+
 
       <div className="flex flex-col gap-3" style={{ padding: "8px 16px 24px" }}>
         <p
@@ -370,8 +436,18 @@ function TradePage() {
               setExchange(it.exchange as typeof exchange);
             }}
             onRemove={removeFromWatchlist}
+            onAlert={(it, price, currency) =>
+              setAlertTarget({ symbol: it.symbol, exchange: it.exchange, price, currency })
+            }
+            onTrade={quickTrade}
           />
+
+          <h2 className="t-mono t-sec" style={{ fontSize: 9, letterSpacing: "0.18em", marginTop: 8 }}>
+            PRICE ALERTS
+          </h2>
+          <AlertsPanel alerts={alerts} loading={alertsLoading} onRemove={removeAlert} />
         </section>
+
 
         <section className="flex flex-col gap-2" style={{ marginTop: 8 }}>
 

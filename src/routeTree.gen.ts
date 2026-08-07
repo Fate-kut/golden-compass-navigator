@@ -19,6 +19,7 @@ import { Route as PoolsRouteImport } from './routes/pools'
 import { Route as OrdersRouteImport } from './routes/orders'
 import { Route as NavigatorRouteImport } from './routes/navigator'
 import { Route as McpRouteImport } from './routes/mcp'
+import { Route as MarketsRouteImport } from './routes/markets'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as KycRouteImport } from './routes/kyc'
 import { Route as HomeRouteImport } from './routes/home'
@@ -26,6 +27,7 @@ import { Route as HistoryRouteImport } from './routes/history'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as StockSymbolRouteImport } from './routes/stock.$symbol'
 import { Route as LegalTermsRouteImport } from './routes/legal.terms'
 import { Route as LegalRiskDisclosureRouteImport } from './routes/legal.risk-disclosure'
 import { Route as LegalPrivacyRouteImport } from './routes/legal.privacy'
@@ -40,10 +42,12 @@ import { Route as ApiMpesaStatusRouteImport } from './routes/api/mpesa-status'
 import { Route as ApiMpesaCallbackRouteImport } from './routes/api/mpesa-callback'
 import { Route as ApiMpesaB2cResultRouteImport } from './routes/api/mpesa-b2c-result'
 import { Route as ApiFeesRouteImport } from './routes/api/fees'
+import { Route as ApiCandlesRouteImport } from './routes/api/candles'
 import { Route as AdminTransactionsRouteImport } from './routes/admin.transactions'
 import { Route as AdminKycRouteImport } from './routes/admin.kyc'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
+import { Route as ApiPublicCheckPriceAlertsRouteImport } from './routes/api/public/check-price-alerts'
 import { Route as ApiPublicAmlScanRouteImport } from './routes/api/public/aml-scan'
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
 
@@ -97,6 +101,11 @@ const McpRoute = McpRouteImport.update({
   path: '/mcp',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MarketsRoute = MarketsRouteImport.update({
+  id: '/markets',
+  path: '/markets',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
@@ -130,6 +139,11 @@ const AdminRoute = AdminRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StockSymbolRoute = StockSymbolRouteImport.update({
+  id: '/stock/$symbol',
+  path: '/stock/$symbol',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LegalTermsRoute = LegalTermsRouteImport.update({
@@ -202,6 +216,11 @@ const ApiFeesRoute = ApiFeesRouteImport.update({
   path: '/api/fees',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiCandlesRoute = ApiCandlesRouteImport.update({
+  id: '/api/candles',
+  path: '/api/candles',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminTransactionsRoute = AdminTransactionsRouteImport.update({
   id: '/transactions',
   path: '/transactions',
@@ -224,6 +243,12 @@ const Char91DotmcpChar93ListToolsRoute =
     path: '/.mcp/list-tools',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicCheckPriceAlertsRoute =
+  ApiPublicCheckPriceAlertsRouteImport.update({
+    id: '/api/public/check-price-alerts',
+    path: '/api/public/check-price-alerts',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicAmlScanRoute = ApiPublicAmlScanRouteImport.update({
   id: '/api/public/aml-scan',
   path: '/api/public/aml-scan',
@@ -244,6 +269,7 @@ export interface FileRoutesByFullPath {
   '/home': typeof HomeRoute
   '/kyc': typeof KycRoute
   '/login': typeof LoginRoute
+  '/markets': typeof MarketsRoute
   '/mcp': typeof McpRoute
   '/navigator': typeof NavigatorRoute
   '/orders': typeof OrdersRoute
@@ -258,6 +284,7 @@ export interface FileRoutesByFullPath {
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/admin/kyc': typeof AdminKycRoute
   '/admin/transactions': typeof AdminTransactionsRoute
+  '/api/candles': typeof ApiCandlesRoute
   '/api/fees': typeof ApiFeesRoute
   '/api/mpesa-b2c-result': typeof ApiMpesaB2cResultRoute
   '/api/mpesa-callback': typeof ApiMpesaCallbackRoute
@@ -272,8 +299,10 @@ export interface FileRoutesByFullPath {
   '/legal/privacy': typeof LegalPrivacyRoute
   '/legal/risk-disclosure': typeof LegalRiskDisclosureRoute
   '/legal/terms': typeof LegalTermsRoute
+  '/stock/$symbol': typeof StockSymbolRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/api/public/aml-scan': typeof ApiPublicAmlScanRoute
+  '/api/public/check-price-alerts': typeof ApiPublicCheckPriceAlertsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -283,6 +312,7 @@ export interface FileRoutesByTo {
   '/home': typeof HomeRoute
   '/kyc': typeof KycRoute
   '/login': typeof LoginRoute
+  '/markets': typeof MarketsRoute
   '/mcp': typeof McpRoute
   '/navigator': typeof NavigatorRoute
   '/orders': typeof OrdersRoute
@@ -297,6 +327,7 @@ export interface FileRoutesByTo {
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/admin/kyc': typeof AdminKycRoute
   '/admin/transactions': typeof AdminTransactionsRoute
+  '/api/candles': typeof ApiCandlesRoute
   '/api/fees': typeof ApiFeesRoute
   '/api/mpesa-b2c-result': typeof ApiMpesaB2cResultRoute
   '/api/mpesa-callback': typeof ApiMpesaCallbackRoute
@@ -311,8 +342,10 @@ export interface FileRoutesByTo {
   '/legal/privacy': typeof LegalPrivacyRoute
   '/legal/risk-disclosure': typeof LegalRiskDisclosureRoute
   '/legal/terms': typeof LegalTermsRoute
+  '/stock/$symbol': typeof StockSymbolRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/api/public/aml-scan': typeof ApiPublicAmlScanRoute
+  '/api/public/check-price-alerts': typeof ApiPublicCheckPriceAlertsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -323,6 +356,7 @@ export interface FileRoutesById {
   '/home': typeof HomeRoute
   '/kyc': typeof KycRoute
   '/login': typeof LoginRoute
+  '/markets': typeof MarketsRoute
   '/mcp': typeof McpRoute
   '/navigator': typeof NavigatorRoute
   '/orders': typeof OrdersRoute
@@ -337,6 +371,7 @@ export interface FileRoutesById {
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/admin/kyc': typeof AdminKycRoute
   '/admin/transactions': typeof AdminTransactionsRoute
+  '/api/candles': typeof ApiCandlesRoute
   '/api/fees': typeof ApiFeesRoute
   '/api/mpesa-b2c-result': typeof ApiMpesaB2cResultRoute
   '/api/mpesa-callback': typeof ApiMpesaCallbackRoute
@@ -351,8 +386,10 @@ export interface FileRoutesById {
   '/legal/privacy': typeof LegalPrivacyRoute
   '/legal/risk-disclosure': typeof LegalRiskDisclosureRoute
   '/legal/terms': typeof LegalTermsRoute
+  '/stock/$symbol': typeof StockSymbolRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/api/public/aml-scan': typeof ApiPublicAmlScanRoute
+  '/api/public/check-price-alerts': typeof ApiPublicCheckPriceAlertsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -364,6 +401,7 @@ export interface FileRouteTypes {
     | '/home'
     | '/kyc'
     | '/login'
+    | '/markets'
     | '/mcp'
     | '/navigator'
     | '/orders'
@@ -378,6 +416,7 @@ export interface FileRouteTypes {
     | '/.well-known/oauth-protected-resource'
     | '/admin/kyc'
     | '/admin/transactions'
+    | '/api/candles'
     | '/api/fees'
     | '/api/mpesa-b2c-result'
     | '/api/mpesa-callback'
@@ -392,8 +431,10 @@ export interface FileRouteTypes {
     | '/legal/privacy'
     | '/legal/risk-disclosure'
     | '/legal/terms'
+    | '/stock/$symbol'
     | '/.mcp/invoke-tool/$tool'
     | '/api/public/aml-scan'
+    | '/api/public/check-price-alerts'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -403,6 +444,7 @@ export interface FileRouteTypes {
     | '/home'
     | '/kyc'
     | '/login'
+    | '/markets'
     | '/mcp'
     | '/navigator'
     | '/orders'
@@ -417,6 +459,7 @@ export interface FileRouteTypes {
     | '/.well-known/oauth-protected-resource'
     | '/admin/kyc'
     | '/admin/transactions'
+    | '/api/candles'
     | '/api/fees'
     | '/api/mpesa-b2c-result'
     | '/api/mpesa-callback'
@@ -431,8 +474,10 @@ export interface FileRouteTypes {
     | '/legal/privacy'
     | '/legal/risk-disclosure'
     | '/legal/terms'
+    | '/stock/$symbol'
     | '/.mcp/invoke-tool/$tool'
     | '/api/public/aml-scan'
+    | '/api/public/check-price-alerts'
   id:
     | '__root__'
     | '/'
@@ -442,6 +487,7 @@ export interface FileRouteTypes {
     | '/home'
     | '/kyc'
     | '/login'
+    | '/markets'
     | '/mcp'
     | '/navigator'
     | '/orders'
@@ -456,6 +502,7 @@ export interface FileRouteTypes {
     | '/.well-known/oauth-protected-resource'
     | '/admin/kyc'
     | '/admin/transactions'
+    | '/api/candles'
     | '/api/fees'
     | '/api/mpesa-b2c-result'
     | '/api/mpesa-callback'
@@ -470,8 +517,10 @@ export interface FileRouteTypes {
     | '/legal/privacy'
     | '/legal/risk-disclosure'
     | '/legal/terms'
+    | '/stock/$symbol'
     | '/.mcp/invoke-tool/$tool'
     | '/api/public/aml-scan'
+    | '/api/public/check-price-alerts'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -482,6 +531,7 @@ export interface RootRouteChildren {
   HomeRoute: typeof HomeRoute
   KycRoute: typeof KycRoute
   LoginRoute: typeof LoginRoute
+  MarketsRoute: typeof MarketsRoute
   McpRoute: typeof McpRoute
   NavigatorRoute: typeof NavigatorRoute
   OrdersRoute: typeof OrdersRoute
@@ -494,6 +544,7 @@ export interface RootRouteChildren {
   TradeRoute: typeof TradeRoute
   Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  ApiCandlesRoute: typeof ApiCandlesRoute
   ApiFeesRoute: typeof ApiFeesRoute
   ApiMpesaB2cResultRoute: typeof ApiMpesaB2cResultRoute
   ApiMpesaCallbackRoute: typeof ApiMpesaCallbackRoute
@@ -508,8 +559,10 @@ export interface RootRouteChildren {
   LegalPrivacyRoute: typeof LegalPrivacyRoute
   LegalRiskDisclosureRoute: typeof LegalRiskDisclosureRoute
   LegalTermsRoute: typeof LegalTermsRoute
+  StockSymbolRoute: typeof StockSymbolRoute
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
   ApiPublicAmlScanRoute: typeof ApiPublicAmlScanRoute
+  ApiPublicCheckPriceAlertsRoute: typeof ApiPublicCheckPriceAlertsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -584,6 +637,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof McpRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/markets': {
+      id: '/markets'
+      path: '/markets'
+      fullPath: '/markets'
+      preLoaderRoute: typeof MarketsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/login': {
       id: '/login'
       path: '/login'
@@ -631,6 +691,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/stock/$symbol': {
+      id: '/stock/$symbol'
+      path: '/stock/$symbol'
+      fullPath: '/stock/$symbol'
+      preLoaderRoute: typeof StockSymbolRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/legal/terms': {
@@ -731,6 +798,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiFeesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/candles': {
+      id: '/api/candles'
+      path: '/api/candles'
+      fullPath: '/api/candles'
+      preLoaderRoute: typeof ApiCandlesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/transactions': {
       id: '/admin/transactions'
       path: '/transactions'
@@ -757,6 +831,13 @@ declare module '@tanstack/react-router' {
       path: '/.mcp/list-tools'
       fullPath: '/.mcp/list-tools'
       preLoaderRoute: typeof Char91DotmcpChar93ListToolsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/check-price-alerts': {
+      id: '/api/public/check-price-alerts'
+      path: '/api/public/check-price-alerts'
+      fullPath: '/api/public/check-price-alerts'
+      preLoaderRoute: typeof ApiPublicCheckPriceAlertsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/aml-scan': {
@@ -796,6 +877,7 @@ const rootRouteChildren: RootRouteChildren = {
   HomeRoute: HomeRoute,
   KycRoute: KycRoute,
   LoginRoute: LoginRoute,
+  MarketsRoute: MarketsRoute,
   McpRoute: McpRoute,
   NavigatorRoute: NavigatorRoute,
   OrdersRoute: OrdersRoute,
@@ -809,6 +891,7 @@ const rootRouteChildren: RootRouteChildren = {
   Char91DotmcpChar93ListToolsRoute: Char91DotmcpChar93ListToolsRoute,
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
     Char91DotwellKnownChar93OauthProtectedResourceRoute,
+  ApiCandlesRoute: ApiCandlesRoute,
   ApiFeesRoute: ApiFeesRoute,
   ApiMpesaB2cResultRoute: ApiMpesaB2cResultRoute,
   ApiMpesaCallbackRoute: ApiMpesaCallbackRoute,
@@ -823,8 +906,10 @@ const rootRouteChildren: RootRouteChildren = {
   LegalPrivacyRoute: LegalPrivacyRoute,
   LegalRiskDisclosureRoute: LegalRiskDisclosureRoute,
   LegalTermsRoute: LegalTermsRoute,
+  StockSymbolRoute: StockSymbolRoute,
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
   ApiPublicAmlScanRoute: ApiPublicAmlScanRoute,
+  ApiPublicCheckPriceAlertsRoute: ApiPublicCheckPriceAlertsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

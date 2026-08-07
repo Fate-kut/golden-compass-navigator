@@ -456,6 +456,42 @@ export type Database = {
           },
         ]
       }
+      price_alerts: {
+        Row: {
+          condition: string
+          created_at: string
+          exchange: string
+          id: string
+          name: string | null
+          symbol: string
+          threshold_price: number
+          triggered_at: string | null
+          user_id: string
+        }
+        Insert: {
+          condition: string
+          created_at?: string
+          exchange?: string
+          id?: string
+          name?: string | null
+          symbol: string
+          threshold_price: number
+          triggered_at?: string | null
+          user_id: string
+        }
+        Update: {
+          condition?: string
+          created_at?: string
+          exchange?: string
+          id?: string
+          name?: string | null
+          symbol?: string
+          threshold_price?: number
+          triggered_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
