@@ -45,6 +45,7 @@ import { Route as AdminTransactionsRouteImport } from './routes/admin.transactio
 import { Route as AdminKycRouteImport } from './routes/admin.kyc'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
 import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
+import { Route as ApiPublicCheckPriceAlertsRouteImport } from './routes/api/public/check-price-alerts'
 import { Route as ApiPublicAmlScanRouteImport } from './routes/api/public/aml-scan'
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
 
@@ -230,6 +231,12 @@ const Char91DotmcpChar93ListToolsRoute =
     path: '/.mcp/list-tools',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicCheckPriceAlertsRoute =
+  ApiPublicCheckPriceAlertsRouteImport.update({
+    id: '/api/public/check-price-alerts',
+    path: '/api/public/check-price-alerts',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicAmlScanRoute = ApiPublicAmlScanRouteImport.update({
   id: '/api/public/aml-scan',
   path: '/api/public/aml-scan',
@@ -281,6 +288,7 @@ export interface FileRoutesByFullPath {
   '/legal/terms': typeof LegalTermsRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/api/public/aml-scan': typeof ApiPublicAmlScanRoute
+  '/api/public/check-price-alerts': typeof ApiPublicCheckPriceAlertsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -321,6 +329,7 @@ export interface FileRoutesByTo {
   '/legal/terms': typeof LegalTermsRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/api/public/aml-scan': typeof ApiPublicAmlScanRoute
+  '/api/public/check-price-alerts': typeof ApiPublicCheckPriceAlertsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -362,6 +371,7 @@ export interface FileRoutesById {
   '/legal/terms': typeof LegalTermsRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/api/public/aml-scan': typeof ApiPublicAmlScanRoute
+  '/api/public/check-price-alerts': typeof ApiPublicCheckPriceAlertsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -404,6 +414,7 @@ export interface FileRouteTypes {
     | '/legal/terms'
     | '/.mcp/invoke-tool/$tool'
     | '/api/public/aml-scan'
+    | '/api/public/check-price-alerts'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -444,6 +455,7 @@ export interface FileRouteTypes {
     | '/legal/terms'
     | '/.mcp/invoke-tool/$tool'
     | '/api/public/aml-scan'
+    | '/api/public/check-price-alerts'
   id:
     | '__root__'
     | '/'
@@ -484,6 +496,7 @@ export interface FileRouteTypes {
     | '/legal/terms'
     | '/.mcp/invoke-tool/$tool'
     | '/api/public/aml-scan'
+    | '/api/public/check-price-alerts'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -523,6 +536,7 @@ export interface RootRouteChildren {
   LegalTermsRoute: typeof LegalTermsRoute
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
   ApiPublicAmlScanRoute: typeof ApiPublicAmlScanRoute
+  ApiPublicCheckPriceAlertsRoute: typeof ApiPublicCheckPriceAlertsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -779,6 +793,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char91DotmcpChar93ListToolsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/check-price-alerts': {
+      id: '/api/public/check-price-alerts'
+      path: '/api/public/check-price-alerts'
+      fullPath: '/api/public/check-price-alerts'
+      preLoaderRoute: typeof ApiPublicCheckPriceAlertsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/aml-scan': {
       id: '/api/public/aml-scan'
       path: '/api/public/aml-scan'
@@ -846,6 +867,7 @@ const rootRouteChildren: RootRouteChildren = {
   LegalTermsRoute: LegalTermsRoute,
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
   ApiPublicAmlScanRoute: ApiPublicAmlScanRoute,
+  ApiPublicCheckPriceAlertsRoute: ApiPublicCheckPriceAlertsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
