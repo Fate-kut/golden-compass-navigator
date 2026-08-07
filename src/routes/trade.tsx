@@ -1,10 +1,13 @@
 import { createFileRoute, Link, Navigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { OrderList, useOrders } from "@/components/OrderHistory";
-import { Watchlist, useWatchlist } from "@/components/Watchlist";
+import { Watchlist, useWatchlist, type WatchlistItem } from "@/components/Watchlist";
+import { SearchDialog, SearchButton, useSearchHotkey } from "@/components/SearchDialog";
+import { AlertModal, AlertsPanel, usePriceAlerts } from "@/components/PriceAlerts";
+
 
 
 export const Route = createFileRoute("/trade")({
