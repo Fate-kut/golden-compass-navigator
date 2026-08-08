@@ -121,6 +121,33 @@ export type Database = {
         }
         Relationships: []
       }
+      brokerage_accounts: {
+        Row: {
+          account_id: string
+          created_at: string
+          id: string
+          is_default: boolean
+          label: string
+          user_id: string
+        }
+        Insert: {
+          account_id: string
+          created_at?: string
+          id?: string
+          is_default?: boolean
+          label?: string
+          user_id: string
+        }
+        Update: {
+          account_id?: string
+          created_at?: string
+          id?: string
+          is_default?: boolean
+          label?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       fee_config: {
         Row: {
           commission_percent: number
