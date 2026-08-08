@@ -9,13 +9,15 @@ interface Props {
   watchlist: WatchlistItem[];
   onAdd: (symbol: string, exchange: string) => void | Promise<void>;
   onRemove: (id: string) => void | Promise<void>;
+  /** When provided, selecting a result picks it for trading instead of navigating. */
+  onPick?: (entry: SymbolEntry) => void;
 }
 
 /**
  * Global symbol search. Full-screen glass sheet on mobile, Cmd/Ctrl+K on desktop.
  * Filtering is client-side against the seeded directory in src/lib/symbols.ts.
  */
-export function SearchDialog({ open, onClose, watchlist, onAdd, onRemove }: Props) {
+export function SearchDialog({ open, onClose, watchlist, onAdd, onRemove, onPick }: Props) {
   const navigate = useNavigate();
   const [raw, setRaw] = useState("");
   const [query, setQuery] = useState("");
@@ -50,6 +52,10 @@ export function SearchDialog({ open, onClose, watchlist, onAdd, onRemove }: Prop
 
   const go = (s: SymbolEntry) => {
     onClose();
+    if (onPick) {
+      onPick(s);
+      return;
+    }
     void navigate({ to: "/stock/$symbol", params: { symbol: s.symbol }, search: { exchange: s.exchange } });
   };
 
