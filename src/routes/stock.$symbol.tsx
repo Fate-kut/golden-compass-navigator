@@ -59,9 +59,8 @@ function StockDetail() {
 
   const { items: watchlist, add, remove } = useWatchlist(user?.id);
   const [quote, setQuote] = useState<ClientQuote | null>(null);
-  const [range, setRange] = useState<Range>("3M");
-  const [data, setData] = useState<CandlesResponse | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [range, setRange] = useState<CandleRange>("3M");
+  const { data, bars, loading, error } = useCandles(sym, exchange, range, true);
 
   useEffect(() => {
     let active = true;
@@ -74,36 +73,28 @@ function StockDetail() {
   }, [sym, exchange]);
 
   useEffect(() => {
-    let active = true;
-    setLoading(true);
-    fetch(`/api/candles?symbol=${encodeURIComponent(sym)}&exchange=${exchange}&range=${range}&info=1`)
-      .then((r) => r.json())
-      .then((d) => {
-        if (!active) return;
-        if (d?.error) throw new Error(d.error);
-        setData(d as CandlesResponse);
-      })
-      .catch(() => active && toast.error("Could not load chart"))
-      .finally(() => active && setLoading(false));
-    return () => {
-      active = false;
-    };
-  }, [sym, exchange, range]);
+    if (error) toast.error(error);
+  }, [error]);
 
   if (authLoading) return null;
   if (!user) return <Navigate to="/login" />;
 
   const watched = watchlist.find((w) => w.symbol.toUpperCase() === sym && w.exchange === exchange);
-  const bars = data?.bars ?? [];
-  const dayHigh = bars.length ? Math.max(...bars.slice(-1).map((b) => b.h)) : null;
-  const dayLow = bars.length ? Math.min(...bars.slice(-1).map((b) => b.l)) : null;
-  const volume = bars.length ? bars[bars.length - 1].v : null;
+  const last = bars.length ? bars[bars.length - 1] : null;
+  const dayHigh = last?.h ?? null;
+  const dayLow = last?.l ?? null;
+  const volume = last?.v ?? null;
   const seriesHigh = bars.length ? Math.max(...bars.map((b) => b.h)) : null;
   const seriesLow = bars.length ? Math.min(...bars.map((b) => b.l)) : null;
-  const info = data?.info;
+  const info = data?.info as CompanyInfo | undefined;
   const cur = quote?.currency ?? data?.currency ?? "";
   const fmt = (v?: number | null) =>
     v == null ? "—" : v.toLocaleString(undefined, { maximumFractionDigits: 2 });
+  const dayChangeValue =
+    quote && quote.change_pct !== 0
+      ? quote.price - quote.price / (1 + quote.change_pct / 100)
+      : 0;
+
 
   const card: React.CSSProperties = {
     padding: 14,
