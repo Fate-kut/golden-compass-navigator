@@ -3,12 +3,10 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 import { useWatchlist } from "@/components/Watchlist";
-import { CandleChart, type Candle } from "@/components/CandleChart";
+import { CandlestickChart } from "@/components/CandlestickChart";
+import { useCandles, type CandleRange } from "@/lib/candles-client";
 import { fetchQuote, type ClientQuote } from "@/lib/quote-client";
 import { lookupSymbol } from "@/lib/symbols";
-
-const RANGES = ["1M", "3M", "6M", "1Y"] as const;
-type Range = (typeof RANGES)[number];
 
 interface CompanyInfo {
   available: boolean;
@@ -28,14 +26,6 @@ interface CompanyInfo {
   };
 }
 
-interface CandlesResponse {
-  symbol: string;
-  currency: string;
-  bars: Candle[];
-  simulated: boolean;
-  fallback_reason?: string;
-  info?: CompanyInfo;
-}
 
 export const Route = createFileRoute("/stock/$symbol")({
   validateSearch: (search: Record<string, unknown>) => ({
