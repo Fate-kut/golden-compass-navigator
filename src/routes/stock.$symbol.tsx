@@ -129,17 +129,19 @@ function StockDetail() {
           </button>
         </div>
 
-        {quote && (
-          <div className="flex items-baseline gap-3" style={{ marginTop: 8 }}>
+        {quote ? (
+          <div className="flex items-baseline gap-3 flex-wrap" style={{ marginTop: 8 }}>
             <span className="t-serif t-parch" style={{ fontSize: 28 }}>
               {quote.currency} {fmt(quote.price)}
             </span>
             <span
               className="t-mono"
+              title="Change since the previous close"
               style={{ fontSize: 13, color: quote.change_pct >= 0 ? "rgb(120,200,140)" : "rgb(220,120,120)" }}
             >
-              {quote.change_pct >= 0 ? "+" : ""}
-              {quote.change_pct.toFixed(2)}%
+              {dayChangeValue >= 0 ? "+" : "−"}
+              {fmt(Math.abs(dayChangeValue))} ({quote.change_pct >= 0 ? "+" : ""}
+              {quote.change_pct.toFixed(2)}%)
             </span>
             <span
               className="t-mono"
@@ -156,42 +158,26 @@ function StockDetail() {
               {quote.simulated ? "SIMULATED" : "LIVE"}
             </span>
           </div>
+        ) : (
+          <div className="flex items-center gap-3" style={{ marginTop: 10 }}>
+            <div className="skeleton rounded-lg" style={{ height: 26, width: 150 }} />
+            <div className="skeleton rounded-lg" style={{ height: 16, width: 110 }} />
+          </div>
         )}
       </header>
 
       <div className="flex flex-col gap-3" style={{ padding: "6px 16px 24px" }}>
         <div style={card}>
-          <div className="flex gap-2" style={{ marginBottom: 10 }}>
-            {RANGES.map((r) => (
-              <button
-                key={r}
-                onClick={() => setRange(r)}
-                className="t-mono"
-                style={{
-                  flex: 1,
-                  padding: "6px 0",
-                  borderRadius: 999,
-                  fontSize: 10,
-                  letterSpacing: "0.1em",
-                  cursor: "pointer",
-                  border: `1px solid ${r === range ? "rgba(201,168,76,0.5)" : "rgba(201,168,76,0.18)"}`,
-                  background: r === range ? "rgba(201,168,76,0.14)" : "transparent",
-                  color: r === range ? "rgb(235,215,165)" : "rgba(200,175,130,0.6)",
-                }}
-              >
-                {r}
-              </button>
-            ))}
-          </div>
-          {loading ? <div className="skeleton w-full rounded-2xl" style={{ height: 240 }} /> : (
-            <CandleChart candles={bars} currency={cur} />
-          )}
-          {data?.simulated && (
-            <p className="t-mono" style={{ marginTop: 8, fontSize: 9, color: "rgb(235,200,130)" }}>
-              Simulated price history{data.fallback_reason ? ` — ${data.fallback_reason}` : ""}.
-            </p>
-          )}
+          <CandlestickChart
+            bars={bars}
+            currency={cur}
+            range={range}
+            onRangeChange={setRange}
+            loading={loading}
+            unavailableReason={data?.unavailable_reason ?? null}
+          />
         </div>
+
 
         <div style={card}>
           <p className="t-mono t-sec" style={{ fontSize: 9, letterSpacing: "0.18em", marginBottom: 10 }}>
