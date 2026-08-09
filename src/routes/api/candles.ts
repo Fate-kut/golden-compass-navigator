@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { getHistoricalBars, getCompanyInfo, type BarRange } from "@/lib/market.server";
 
-const RANGES: BarRange[] = ["1M", "3M", "6M", "1Y"];
+const RANGES: BarRange[] = ["1D", "1W", "1M", "3M", "1Y"];
 
 export const Route = createFileRoute("/api/candles")({
   server: {
@@ -20,7 +20,15 @@ export const Route = createFileRoute("/api/candles")({
             getHistoricalBars(symbol, exchange, range),
             withInfo ? getCompanyInfo(symbol, exchange) : Promise.resolve(null),
           ]);
-          return Response.json(info ? { ...bars, info } : bars);
+          // Short shared cache so repeated range switches feel instant.
+          return Response.json(info ? { ...bars, info } : bars, {
+            headers: {
+              "Cache-Control":
+                range === "1D" || range === "1W"
+                  ? "public, max-age=30, stale-while-revalidate=120"
+                  : "public, max-age=300, stale-while-revalidate=900",
+            },
+          });
         } catch (e) {
           return Response.json(
             { error: e instanceof Error ? e.message : "Candles failed" },

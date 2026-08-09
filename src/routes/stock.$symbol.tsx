@@ -3,12 +3,10 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 import { useWatchlist } from "@/components/Watchlist";
-import { CandleChart, type Candle } from "@/components/CandleChart";
+import { CandlestickChart } from "@/components/CandlestickChart";
+import { useCandles, type CandleRange } from "@/lib/candles-client";
 import { fetchQuote, type ClientQuote } from "@/lib/quote-client";
 import { lookupSymbol } from "@/lib/symbols";
-
-const RANGES = ["1M", "3M", "6M", "1Y"] as const;
-type Range = (typeof RANGES)[number];
 
 interface CompanyInfo {
   available: boolean;
@@ -28,14 +26,6 @@ interface CompanyInfo {
   };
 }
 
-interface CandlesResponse {
-  symbol: string;
-  currency: string;
-  bars: Candle[];
-  simulated: boolean;
-  fallback_reason?: string;
-  info?: CompanyInfo;
-}
 
 export const Route = createFileRoute("/stock/$symbol")({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -69,9 +59,8 @@ function StockDetail() {
 
   const { items: watchlist, add, remove } = useWatchlist(user?.id);
   const [quote, setQuote] = useState<ClientQuote | null>(null);
-  const [range, setRange] = useState<Range>("3M");
-  const [data, setData] = useState<CandlesResponse | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [range, setRange] = useState<CandleRange>("3M");
+  const { data, bars, loading, error } = useCandles(sym, exchange, range, true);
 
   useEffect(() => {
     let active = true;
@@ -84,36 +73,28 @@ function StockDetail() {
   }, [sym, exchange]);
 
   useEffect(() => {
-    let active = true;
-    setLoading(true);
-    fetch(`/api/candles?symbol=${encodeURIComponent(sym)}&exchange=${exchange}&range=${range}&info=1`)
-      .then((r) => r.json())
-      .then((d) => {
-        if (!active) return;
-        if (d?.error) throw new Error(d.error);
-        setData(d as CandlesResponse);
-      })
-      .catch(() => active && toast.error("Could not load chart"))
-      .finally(() => active && setLoading(false));
-    return () => {
-      active = false;
-    };
-  }, [sym, exchange, range]);
+    if (error) toast.error(error);
+  }, [error]);
 
   if (authLoading) return null;
   if (!user) return <Navigate to="/login" />;
 
   const watched = watchlist.find((w) => w.symbol.toUpperCase() === sym && w.exchange === exchange);
-  const bars = data?.bars ?? [];
-  const dayHigh = bars.length ? Math.max(...bars.slice(-1).map((b) => b.h)) : null;
-  const dayLow = bars.length ? Math.min(...bars.slice(-1).map((b) => b.l)) : null;
-  const volume = bars.length ? bars[bars.length - 1].v : null;
+  const last = bars.length ? bars[bars.length - 1] : null;
+  const dayHigh = last?.h ?? null;
+  const dayLow = last?.l ?? null;
+  const volume = last?.v ?? null;
   const seriesHigh = bars.length ? Math.max(...bars.map((b) => b.h)) : null;
   const seriesLow = bars.length ? Math.min(...bars.map((b) => b.l)) : null;
-  const info = data?.info;
+  const info = data?.info as CompanyInfo | undefined;
   const cur = quote?.currency ?? data?.currency ?? "";
   const fmt = (v?: number | null) =>
     v == null ? "—" : v.toLocaleString(undefined, { maximumFractionDigits: 2 });
+  const dayChangeValue =
+    quote && quote.change_pct !== 0
+      ? quote.price - quote.price / (1 + quote.change_pct / 100)
+      : 0;
+
 
   const card: React.CSSProperties = {
     padding: 14,
@@ -148,17 +129,19 @@ function StockDetail() {
           </button>
         </div>
 
-        {quote && (
-          <div className="flex items-baseline gap-3" style={{ marginTop: 8 }}>
+        {quote ? (
+          <div className="flex items-baseline gap-3 flex-wrap" style={{ marginTop: 8 }}>
             <span className="t-serif t-parch" style={{ fontSize: 28 }}>
               {quote.currency} {fmt(quote.price)}
             </span>
             <span
               className="t-mono"
+              title="Change since the previous close"
               style={{ fontSize: 13, color: quote.change_pct >= 0 ? "rgb(120,200,140)" : "rgb(220,120,120)" }}
             >
-              {quote.change_pct >= 0 ? "+" : ""}
-              {quote.change_pct.toFixed(2)}%
+              {dayChangeValue >= 0 ? "+" : "−"}
+              {fmt(Math.abs(dayChangeValue))} ({quote.change_pct >= 0 ? "+" : ""}
+              {quote.change_pct.toFixed(2)}%)
             </span>
             <span
               className="t-mono"
@@ -175,42 +158,26 @@ function StockDetail() {
               {quote.simulated ? "SIMULATED" : "LIVE"}
             </span>
           </div>
+        ) : (
+          <div className="flex items-center gap-3" style={{ marginTop: 10 }}>
+            <div className="skeleton rounded-lg" style={{ height: 26, width: 150 }} />
+            <div className="skeleton rounded-lg" style={{ height: 16, width: 110 }} />
+          </div>
         )}
       </header>
 
       <div className="flex flex-col gap-3" style={{ padding: "6px 16px 24px" }}>
         <div style={card}>
-          <div className="flex gap-2" style={{ marginBottom: 10 }}>
-            {RANGES.map((r) => (
-              <button
-                key={r}
-                onClick={() => setRange(r)}
-                className="t-mono"
-                style={{
-                  flex: 1,
-                  padding: "6px 0",
-                  borderRadius: 999,
-                  fontSize: 10,
-                  letterSpacing: "0.1em",
-                  cursor: "pointer",
-                  border: `1px solid ${r === range ? "rgba(201,168,76,0.5)" : "rgba(201,168,76,0.18)"}`,
-                  background: r === range ? "rgba(201,168,76,0.14)" : "transparent",
-                  color: r === range ? "rgb(235,215,165)" : "rgba(200,175,130,0.6)",
-                }}
-              >
-                {r}
-              </button>
-            ))}
-          </div>
-          {loading ? <div className="skeleton w-full rounded-2xl" style={{ height: 240 }} /> : (
-            <CandleChart candles={bars} currency={cur} />
-          )}
-          {data?.simulated && (
-            <p className="t-mono" style={{ marginTop: 8, fontSize: 9, color: "rgb(235,200,130)" }}>
-              Simulated price history{data.fallback_reason ? ` — ${data.fallback_reason}` : ""}.
-            </p>
-          )}
+          <CandlestickChart
+            bars={bars}
+            currency={cur}
+            range={range}
+            onRangeChange={setRange}
+            loading={loading}
+            unavailableReason={data?.unavailable_reason ?? null}
+          />
         </div>
+
 
         <div style={card}>
           <p className="t-mono t-sec" style={{ fontSize: 9, letterSpacing: "0.18em", marginBottom: 10 }}>
