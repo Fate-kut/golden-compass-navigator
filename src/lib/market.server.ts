@@ -250,10 +250,10 @@ export async function isSimulatedTrading(): Promise<boolean> {
    Historical OHLC bars
    ──────────────────────────────────────────────────────────────────────────── */
 
-export type BarRange = "1M" | "3M" | "6M" | "1Y";
+export type BarRange = "1D" | "1W" | "1M" | "3M" | "1Y";
 
 export interface Bar {
-  /** Unix seconds, start of the daily bar. */
+  /** Unix seconds, start of the bar. */
   t: number;
   o: number;
   h: number;
@@ -268,68 +268,29 @@ export interface BarsResult {
   currency: "KES" | "USD";
   range: BarRange;
   bars: Bar[];
-  /** True when the series was synthesized rather than fetched from a real feed. */
+  /** Always false — no synthesized candles are ever returned. */
   simulated: boolean;
-  /** Why a live series was not used, when applicable. */
-  fallback_reason?: string;
+  /** Set when the provider could not supply this range; UI shows an empty state. */
+  unavailable_reason?: string;
 }
 
-const RANGE_DAYS: Record<BarRange, number> = { "1M": 22, "3M": 66, "6M": 132, "1Y": 252 };
-
-/**
- * Synthesizes a plausible daily OHLC series ending at `lastClose`.
- *
- * mystocks.africa's partner API exposes quotes and trades but no historical
- * candle endpoint, so African exchanges fall back to this deterministic
- * simulator. Always tagged `simulated: true` — never presented as real history.
- */
-function synthesizeBars(symbol: string, lastClose: number, days: number): Bar[] {
-  // Deterministic per-symbol PRNG so a reload shows the same chart.
-  let h = 2166136261;
-  for (let i = 0; i < symbol.length; i++) {
-    h ^= symbol.charCodeAt(i);
-    h = Math.imul(h, 16777619);
-  }
-  const rand = () => {
-    h = Math.imul(h ^ (h >>> 15), 2246822507);
-    h = Math.imul(h ^ (h >>> 13), 3266489909);
-    return ((h ^= h >>> 16) >>> 0) / 4294967296;
-  };
-
-  // Walk backwards from the live close, then reverse into chronological order.
-  const closes: number[] = [lastClose];
-  for (let i = 1; i < days; i++) {
-    const step = (rand() - 0.5) * 0.028 + 0.0006;
-    closes.push(Math.max(0.5, closes[i - 1] / (1 + step)));
-  }
-  closes.reverse();
-
-  const dayMs = 86_400_000;
-  const today = Math.floor(Date.now() / dayMs) * dayMs;
-  const bars: Bar[] = [];
-  for (let i = 0; i < closes.length; i++) {
-    const c = Number(closes[i].toFixed(2));
-    const o = Number((i === 0 ? c * (1 + (rand() - 0.5) * 0.01) : closes[i - 1]).toFixed(2));
-    const spread = c * (0.004 + rand() * 0.014);
-    bars.push({
-      t: Math.floor((today - (closes.length - 1 - i) * dayMs) / 1000),
-      o,
-      h: Number((Math.max(o, c) + spread).toFixed(2)),
-      l: Number(Math.max(0.1, Math.min(o, c) - spread).toFixed(2)),
-      c,
-      v: Math.round(10_000 + rand() * 900_000),
-    });
-  }
-  return bars;
-}
+/** Finnhub resolution + lookback window per range. */
+const RANGE_SPEC: Record<BarRange, { resolution: string; seconds: number }> = {
+  "1D": { resolution: "5", seconds: 2 * 86_400 },
+  "1W": { resolution: "30", seconds: 8 * 86_400 },
+  "1M": { resolution: "D", seconds: 35 * 86_400 },
+  "3M": { resolution: "D", seconds: 100 * 86_400 },
+  "1Y": { resolution: "D", seconds: 375 * 86_400 },
+};
 
 async function getFinnhubBars(symbol: string, range: BarRange): Promise<Bar[]> {
   const key = requireKey("FINNHUB_API_KEY", "src/lib/market.server.ts → getFinnhubBars()");
+  const spec = RANGE_SPEC[range];
   const to = Math.floor(Date.now() / 1000);
-  const from = to - RANGE_DAYS[range] * 86_400 * 1.6;
+  const from = to - spec.seconds;
   const url =
     `https://finnhub.io/api/v1/stock/candle?symbol=${encodeURIComponent(symbol)}` +
-    `&resolution=D&from=${Math.floor(from)}&to=${to}&token=${key}`;
+    `&resolution=${spec.resolution}&from=${from}&to=${to}&token=${key}`;
 
   console.info(`[market] finnhub GET ${redact(url)}`);
   const res = await fetch(url);
@@ -356,57 +317,93 @@ async function getFinnhubBars(symbol: string, range: BarRange): Promise<Bar[]> {
   }));
 }
 
+/** mystocks.africa historical series, when the partner API exposes it. */
+async function getMyStocksBars(
+  symbol: string,
+  exchange: AfricanExchange,
+  range: BarRange,
+): Promise<Bar[]> {
+  const key = requireKey("MYSTOCKS_API_KEY", "src/lib/market.server.ts → getMyStocksBars()");
+  const base = myStocksBase(key);
+  const ticker = withExchangeSuffix(symbol, exchange);
+  const url = `${base}/history/${encodeURIComponent(ticker)}?range=${range}`;
+
+  console.info(`[market] mystocks GET ${redact(url)}`);
+  const res = await fetch(url, { headers: { Authorization: `Bearer ${key}` } });
+  console.info(`[market] mystocks GET ${redact(url)} -> ${res.status}`);
+  if (!res.ok) throw new Error(`mystocks history ${res.status}: ${await res.text()}`);
+
+  const data = (await res.json()) as
+    | { bars?: unknown[]; data?: unknown[] }
+    | unknown[];
+  const rows = (Array.isArray(data) ? data : (data.bars ?? data.data ?? [])) as Array<
+    Record<string, unknown>
+  >;
+  const bars = rows
+    .map((r) => {
+      const rawT = r['t'] ?? r['time'] ?? r['date'] ?? r['timestamp'];
+      const t =
+        typeof rawT === "number"
+          ? rawT > 1e11
+            ? Math.floor(rawT / 1000)
+            : rawT
+          : Math.floor(new Date(String(rawT)).getTime() / 1000);
+      return {
+        t,
+        o: Number(r['o'] ?? r['open']),
+        h: Number(r['h'] ?? r['high']),
+        l: Number(r['l'] ?? r['low']),
+        c: Number(r['c'] ?? r['close']),
+        v: Number(r['v'] ?? r['volume'] ?? 0),
+      };
+    })
+    .filter((b) => Number.isFinite(b.t) && Number.isFinite(b.c))
+    .sort((a, b) => a.t - b.t);
+
+  if (bars.length === 0) throw new Error("mystocks returned no historical bars");
+  return bars;
+}
+
 /**
- * Daily OHLC bars. Global symbols use Finnhub; African exchanges have no
- * historical endpoint on mystocks.africa yet, so they get a simulated series
- * anchored to the live/simulated quote — same fallback contract as getQuote.
+ * Real OHLC bars only: Finnhub for global symbols, mystocks.africa for African
+ * exchanges. When a provider cannot serve the requested range the result is an
+ * empty series with `unavailable_reason` — never synthesized candles.
  */
 export async function getHistoricalBars(
   symbol: string,
   exchange: string,
   range: BarRange = "3M",
 ): Promise<BarsResult> {
-  const quote = await getQuote(symbol, exchange);
+  const ex = exchange.toUpperCase();
+  const african = isAfrican(ex);
   const base: Omit<BarsResult, "bars" | "simulated"> = {
-    symbol: quote.symbol,
-    exchange: exchange.toUpperCase(),
-    currency: quote.currency,
+    symbol: african ? withExchangeSuffix(symbol, ex) : symbol.toUpperCase(),
+    exchange: ex,
+    currency: african ? "KES" : "USD",
     range,
   };
 
-  if (isAfrican(exchange)) {
-    return {
-      ...base,
-      bars: synthesizeBars(quote.symbol, quote.price, RANGE_DAYS[range]),
-      simulated: true,
-      fallback_reason: "mystocks.africa does not expose historical candles yet",
-    };
+  try {
+    const bars = african
+      ? await getMyStocksBars(symbol, ex, range)
+      : await getFinnhubBars(symbol, range);
+    return { ...base, bars, simulated: false };
+  } catch (e) {
+    const reason =
+      e instanceof MissingProviderKeyError
+        ? african
+          ? "NSE market data is not configured yet."
+          : "Global market data is not configured yet."
+        : `No ${range} price history available for this symbol right now.`;
+    console.warn(
+      `[market] historical bars unavailable (${ex} ${symbol} ${range}): ${
+        e instanceof Error ? e.message : String(e)
+      }`,
+    );
+    return { ...base, bars: [], simulated: false, unavailable_reason: reason };
   }
-
-  const mode = await getBrokerMode();
-  if (mode === "live") {
-    try {
-      const bars = await getFinnhubBars(symbol, range);
-      return { ...base, bars, simulated: false };
-    } catch (e) {
-      const reason = e instanceof Error ? e.message : String(e);
-      console.warn(`[market] historical bars fell back to simulated: ${reason}`);
-      return {
-        ...base,
-        bars: synthesizeBars(quote.symbol, quote.price, RANGE_DAYS[range]),
-        simulated: true,
-        fallback_reason: reason,
-      };
-    }
-  }
-
-  return {
-    ...base,
-    bars: synthesizeBars(quote.symbol, quote.price, RANGE_DAYS[range]),
-    simulated: true,
-    fallback_reason: "sandbox mode — simulated price history",
-  };
 }
+
 
 /* ────────────────────────────────────────────────────────────────────────────
    Company profile + key metrics
