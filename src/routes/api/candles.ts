@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { getHistoricalBars, getCompanyInfo, type BarRange } from "@/lib/market.server";
 
-const RANGES: BarRange[] = ["1M", "3M", "6M", "1Y"];
+const RANGES: BarRange[] = ["1D", "1W", "1M", "3M", "1Y"];
 
 export const Route = createFileRoute("/api/candles")({
   server: {
